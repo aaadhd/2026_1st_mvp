@@ -7,7 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite --open --port 5173",
     "build": "vite build",
-    "preview": "vite preview --port 5173"
+    "preview": "vite preview --port 5173",
+    "deploy": "netlify deploy --prod",
+    "deploy:draft": "netlify deploy",
+    "git:status": "git status",
+    "git:add": "git add .",
+    "git:commit": "git commit -m",
+    "git:push": "git push origin main",
+    "git:deploy": "git add . && git commit -m \"Update: $(date +'%Y-%m-%d %H:%M:%S')\" && git push origin main",
+    "git:deploy:msg": "git add . && git commit -m"
   },
   "keywords": [],
   "author": "",

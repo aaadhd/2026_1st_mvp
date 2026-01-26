@@ -1,0 +1,15 @@
+# Netlify 설정 파일
+# 수동 배포를 위한 기본 설정
+
+[build]
+  # 빌드 명령어 (필요시)
+  # command = "npm run build"
+  
+  # 배포할 디렉토리 (정적 파일이므로 현재 디렉토리)
+  publish = "."
+
+# 리다이렉트 설정 (SPA를 위한 fallback)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
