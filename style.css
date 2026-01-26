@@ -1,0 +1,716 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+
+/* --- Base & Reset --- */
+:root {
+  /* Notion-style colors */
+  --bg-white: #FFFFFF;
+  --text-primary: #000000;
+  --text-secondary: #37352F;
+  --border-thick: #000000;
+  --border-width: 2px;
+  
+  /* Vibrant accent colors */
+  --accent-red: #FF4757;
+  --accent-blue: #1E90FF;
+  --accent-yellow: #FFC107;
+  --accent-green: #00D9A3;
+  --accent-purple: #9B59B6;
+  --accent-orange: #FF6B35;
+  
+  --google-font: 'Google Sans', 'Noto Sans KR', sans-serif;
+  
+  /* Safe Area Insets (삼성 S25 노치/펀치홀 대응) */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  
+  /* 모바일 최적화 */
+  --touch-target-min: 44px; /* 최소 터치 영역 */
+  --mobile-font-base: 16px; /* 모바일 기본 폰트 */
+  --mobile-spacing: 16px; /* 모바일 기본 간격 */
+}
+
+/* 한글 단어 중간 잘림 방지 (전역) */
+* {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+  /* Clean white background */
+  background-color: #F5F5F5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+#app {
+  width: 100%;
+  max-width: 430px;
+  height: 100dvh; /* 동적 뷰포트 높이 (모바일 최적화) */
+  /* Clean white background */
+  background: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  /* Thick black border for Notion style */
+  border: 3px solid var(--border-thick);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 1);
+  /* Safe area 대응 */
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+}
+
+/* For larger screens */
+@media (min-width: 450px) {
+  #app {
+    height: 90vh;
+    max-height: 900px;
+    border-radius: 24px;
+    margin: auto;
+  }
+}
+
+/* Typography - 모바일 최적화 */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* 모바일 폰트 크기 최적화 (삼성 S25) */
+@media (max-width: 480px) {
+  body {
+    font-size: var(--mobile-font-base);
+    -webkit-text-size-adjust: 100%; /* iOS 텍스트 크기 조정 방지 */
+  }
+  
+  h1 { font-size: clamp(1.75rem, 5vw, 2.5rem); }
+  h2 { font-size: clamp(1.5rem, 4vw, 2rem); }
+  h3 { font-size: clamp(1.25rem, 3.5vw, 1.75rem); }
+  h4 { font-size: clamp(1.125rem, 3vw, 1.5rem); }
+  
+  /* 최소 폰트 크기 보장 */
+  p, span, div, button {
+    font-size: clamp(14px, 4vw, 16px);
+  }
+  
+  /* 작은 텍스트도 읽기 가능하게 */
+  .text-xs, .text-sm {
+    font-size: clamp(12px, 3.5vw, 14px) !important;
+  }
+}
+
+.text-gradient {
+  /* Simplified bold text instead of gradient */
+  color: var(--text-primary);
+  text-shadow: 3px 3px 0 var(--accent-yellow),
+               6px 6px 0 var(--accent-blue);
+  font-weight: 900;
+}
+
+/* --- Components: Playful Modules --- */
+
+/* 1. Circle Game Card (Play Tab Style) */
+.circle-card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100px;
+  /* Fixed width for alignment */
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+
+.circle-card-container:active {
+  transform: scale(0.9);
+}
+
+.circle-thumb {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 8px;
+  border: 4px solid #FFFFFF;
+  background-color: #EEE;
+  position: relative;
+}
+
+.circle-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.circle-card-container:hover .circle-thumb img {
+  transform: scale(1.1);
+}
+
+.circle-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* 2. Featured Big Card (Notion style) */
+.featured-card {
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  border: 2px solid var(--border-thick);
+  box-shadow: 4px 4px 0 var(--border-thick);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.featured-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--border-thick);
+}
+
+/* 3. Action Buttons (Notion style) - 모바일 최적화 */
+.btn-play {
+  background-color: var(--accent-blue);
+  color: white;
+  border-radius: 12px;
+  padding: 14px 24px; /* 모바일 터치 영역 확보 */
+  font-size: clamp(15px, 4vw, 16px);
+  font-weight: 900;
+  border: 2px solid var(--border-thick);
+  box-shadow: 3px 3px 0 var(--border-thick);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  text-transform: none;
+  min-height: var(--touch-target-min); /* 최소 터치 영역 */
+  -webkit-tap-highlight-color: transparent; /* iOS 터치 하이라이트 제거 */
+}
+
+.btn-play:active {
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1.5px 1.5px 0 var(--border-thick);
+}
+
+/* 4. Utilities */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.horizontal-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 16px 20px 16px;
+  /* Bottom padding for shadow */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 5. Animations */
+.animate-pop-in {
+  animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out forwards;
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 화면 전환 애니메이션 */
+#app > div {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* 버튼 호버 효과 - Notion style (모바일 최적화) */
+button:not(:disabled) {
+  border: 2px solid var(--border-thick);
+  transition: all 0.15s ease;
+  min-height: var(--touch-target-min); /* 최소 터치 영역 보장 */
+  min-width: var(--touch-target-min);
+  -webkit-tap-highlight-color: transparent; /* iOS 터치 하이라이트 제거 */
+  touch-action: manipulation; /* 더블탭 줌 방지 */
+}
+
+button:not(:disabled):hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border-thick);
+}
+
+button:not(:disabled):active {
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1px 1px 0 var(--border-thick);
+}
+
+/* 모바일 버튼 간격 최적화 */
+@media (max-width: 480px) {
+  button {
+    padding: 12px 20px;
+    font-size: clamp(14px, 4vw, 16px);
+  }
+  
+  /* 버튼 그룹 간격 */
+  .flex.gap-2 button,
+  .flex.gap-3 button {
+    gap: 12px;
+  }
+}
+
+/* 터치 피드백 효과 */
+.touch-feedback {
+  position: relative;
+  overflow: visible;
+}
+
+.touch-feedback::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.touch-feedback:active::before {
+  opacity: 0.1;
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* 로딩 스켈레톤 */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 접근성: 마우스 사용 시 focus outline 숨김 */
+body.using-mouse *:focus {
+  outline: none;
+}
+
+/* 키보드 사용 시 focus outline 강조 */
+body:not(.using-mouse) *:focus {
+  outline: 3px solid #1A73E8;
+  outline-offset: 2px;
+}
+
+/* 스크롤바 숨김 (모바일처럼 깔끔하게) */
+* {
+  /* Firefox */
+  scrollbar-width: none;
+  /* IE, Edge 구버전 */
+  -ms-overflow-style: none;
+}
+
+/* Chrome, Safari, Edge (Webkit) */
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+/* ============================================
+   삼성 S25 모바일 최적화
+   ============================================ */
+
+/* Safe Area 대응 */
+.safe-area {
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+}
+
+/* 터치 영역 최소 크기 보장 */
+a, button, [role="button"], [onclick] {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 모바일 스크롤 최적화 */
+@media (max-width: 480px) {
+  .overflow-y-auto,
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+    overscroll-behavior: contain; /* 바운스 효과 제한 */
+  }
+  
+  /* 스크롤 영역 패딩 */
+  .flex-1.overflow-y-auto {
+    padding-bottom: calc(var(--safe-area-inset-bottom) + 20px);
+  }
+}
+
+/* 모바일 이미지 최적화 */
+@media (max-width: 480px) {
+  img {
+    max-width: 100%;
+    height: auto;
+    image-rendering: -webkit-optimize-contrast; /* 삼성 디바이스 최적화 */
+  }
+}
+
+/* 모바일 입력 필드 최적화 */
+input, textarea, select {
+  font-size: 16px !important; /* iOS 줌 방지 */
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+/* 모바일 카드 간격 최적화 */
+@media (max-width: 480px) {
+  .notion-card {
+    margin-bottom: var(--mobile-spacing);
+  }
+  
+  .space-y-3 > * + * {
+    margin-top: 12px;
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: 16px;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 20px;
+  }
+}
+
+/* 모바일 헤더/푸터 최적화 */
+@media (max-width: 480px) {
+  /* 상단 헤더 */
+  .sticky.top-0,
+  .fixed.top-0 {
+    padding-top: calc(var(--safe-area-inset-top) + 12px);
+  }
+  
+  /* 하단 버튼 영역 */
+  .fixed.bottom-0,
+  .absolute.bottom-0 {
+    padding-bottom: calc(var(--safe-area-inset-bottom) + 12px);
+  }
+}
+
+/* 모바일 게임 캔버스 최적화 */
+@media (max-width: 480px) {
+  #game-canvas {
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* 모바일 텍스트 선택 방지 (게임 영역) */
+.select-none {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* 모바일 폰트 렌더링 최적화 */
+@media (max-width: 480px) {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* 모바일 애니메이션 성능 최적화 */
+@media (max-width: 480px) {
+  * {
+    will-change: auto;
+  }
+  
+  /* GPU 가속 필요한 요소만 */
+  .animate-pop-in,
+  .animate-fade-in,
+  .animate-slide-up {
+    will-change: transform, opacity;
+  }
+}/* --- Settings Modal Refined Design --- */
+
+/* Stitched Border Container */
+.modal-stitched-container {
+  background-color: white;
+  border-radius: 24px;
+  position: relative;
+  /* The dashed border effect */
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 rgba(0,0,0,1);
+  padding: 4px; /* Space for the inner stitched line */
+  margin: 0 1rem;
+  width: calc(100vw - 2rem);
+  max-width: 360px;
+}
+
+.modal-stitched-inner {
+  border: 2px dashed #D6CCC2; /* Beige/Orange-ish dashed line */
+  border-radius: 20px;
+  padding: 1.5rem 1rem;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Ribbon Header */
+.modal-ribbon-wrapper {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+
+.modal-ribbon {
+  background-color: #0099FF; /* Bright Blue */
+  color: #000;
+  font-family: var(--google-font);
+  font-weight: 900;
+  font-size: 1.25rem;
+  padding: 0.5rem 2.5rem;
+  position: relative;
+  border: 3px solid #000;
+  border-radius: 4px; /* Slight roundness */
+  box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+}
+
+/* Ribbon Ends (Folds) */
+.modal-ribbon::before,
+.modal-ribbon::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  z-index: -1;
+  width: 30px;
+  height: 100%;
+  background-color: #0066CC; /* Darker Blue */
+  border: 3px solid #000;
+}
+
+.modal-ribbon::before {
+  left: -15px;
+  transform: skewY(20deg);
+  border-right: none;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 10px;
+}
+
+.modal-ribbon::after {
+  right: -15px;
+  transform: skewY(-20deg);
+  border-left: none;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 10px;
+}
+
+/* Close Button (Purple Circle) */
+.modal-close-btn-wrapper {
+  position: absolute;
+  top: -25px;
+  right: -15px;
+  z-index: 30;
+}
+
+.modal-close-btn {
+  width: 50px;
+  height: 50px;
+  background-color: #8E44AD; /* Purple */
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #000; /* Outer black border simulating double border */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.modal-close-btn:active {
+  transform: scale(0.95);
+}
+
+.modal-close-btn svg {
+  stroke-width: 2.5;
+}
+
+/* Settings Icon Circles */
+.setting-icon-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid #000;
+  background-color: #FFC107; /* Yellow */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+  transition: all 0.2s;
+}
+
+.setting-icon-circle.disabled {
+  background-color: #E0E0E0;
+  border-color: #999;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.setting-item:active .setting-icon-circle {
+  transform: scale(0.95);
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+}
+
+.setting-label {
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #000;
+}
+
+/* 3D Yellow Action Buttons */
+.btn-yellow-3d {
+  width: 100%;
+  background-color: #FFD54F; /* Lighter Yellow */
+  border: 3px solid #000;
+  border-radius: 50px; /* Pillow shape */
+  padding: 1rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #000;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 0 #F57F17, 0 4px 0 3px #000; /* Darker yellow shadow + black border shadow */
+  transition: transform 0.1s, box-shadow 0.1s;
+  text-align: center;
+}
+
+/* Shine effect */
+.btn-yellow-3d::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  width: 20px;
+  height: 10px;
+  background-color: rgba(255,255,255,0.6);
+  border-radius: 50%;
+  transform: rotate(-15deg);
+}
+
+.btn-yellow-3d:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #F57F17, 0 0 0 3px #000;
+}
+
+/* Layout for Settings Items */
+.settings-grid {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem; /* Space for ribbon */
+  margin-bottom: 2rem;
+  width: 100%;
+}
