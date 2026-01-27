@@ -23,6 +23,7 @@ import { StackGame } from './js/games/StackGame.js';
 
 // --- 데이터 및 상태 관리 ---
 import { ARTISTS_DB, MATCH_REASONS } from './js/data/artists.js';
+import { SCREENING_POOL } from './js/data/screening_pool.js';
 import { state, analytics } from './js/core/state.js';
 import { getArtistDomain, getArtistColor, getGameGuide, getKoreanParticle, getArtistNameOnly } from './js/ui/utils.js';
 
@@ -74,6 +75,19 @@ function preloadAllAppAssets() {
                 }
             }
         }
+    }
+
+    // Collect all screening pool images
+    if (SCREENING_POOL) {
+        SCREENING_POOL.forEach(item => {
+            if (item.img) {
+                const u = resolveAssetUrl(item.img);
+                if (u && !seen.has(u)) {
+                    seen.add(u);
+                    urls.push(u);
+                }
+            }
+        });
     }
 
     // Preload images with error handling

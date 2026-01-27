@@ -13,8 +13,10 @@ export function GameResultScreen() {
     if (!result || !p) return '<div>Loading...</div>';
 
     return `<div class="h-full flex flex-col bg-white">
-        <!-- Header with Menu (노치/다이나믹 아일랜드 회피) -->
-        <div class="screen-header-actions">
+        <!-- Standard Header with Divider (Visual Consistency) -->
+        <div class="p-4 bg-white border-b-2 border-black flex justify-between items-center flex-shrink-0">
+            <div class="w-12"></div>
+            <span class="font-black text-lg" style="color: var(--text-primary);">게임 결과</span>
             <button onclick="window.openSettingsModal()" 
                     class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
                 <i data-lucide="menu" width="24" style="color: var(--text-primary);"></i>
@@ -25,44 +27,44 @@ export function GameResultScreen() {
         <div class="flex-1 overflow-y-auto scroll-safe-bottom">
             <div class="px-6 text-center pt-6 pb-8">
                 <!-- 게임 이모지 + 타이틀 (이미지 스타일) -->
-                <div class="mb-6">
-                    <div class="w-20 h-20 mx-auto mb-4 flex items-center justify-center rounded-full bg-pink-100/80 border border-pink-200/60">
-                        <span class="text-5xl">${p.gameEmoji || '💪'}</span>
+                <div class="mb-8 mt-4">
+                    <div class="w-28 h-28 mx-auto mb-6 flex items-center justify-center rounded-full bg-pink-100/80 border border-pink-200/60 shadow-inner">
+                        <span class="text-6xl">${p.gameEmoji || '💪'}</span>
                     </div>
-                    <p class="text-center font-black text-xl mb-2" style="color: var(--text-primary);">게임 종료!</p>
-                    <p class="text-base font-bold" style="color: var(--text-secondary);">${(() => {
+                    <h2 class="text-center font-black text-4xl mb-3" style="color: var(--text-primary);">게임 종료!</h2>
+                    <p class="text-xl font-bold opacity-80" style="color: var(--text-secondary);">${(() => {
             const artistName = getArtistNameOnly(p.title);
             return p.title + getKoreanParticle(artistName) + ' 함께한 시간';
         })()}</p>
                 </div>
                 
                 <!-- 통계 카드 - 배경색 제거 -->
-                <div class="grid grid-cols-2 gap-4 mb-5 max-w-xs mx-auto">
-                    <div class="py-3">
-                        <div class="text-2xl mb-1">🏆</div>
-                        <div class="text-2xl font-black mb-1" style="color: var(--text-primary);">${result.level || 1}</div>
-                        <div class="text-sm font-black" style="color: var(--text-secondary);">레벨</div>
+                <div class="grid grid-cols-2 gap-6 mb-8 max-w-xs mx-auto">
+                    <div class="py-4">
+                        <div class="text-3xl mb-1">🏆</div>
+                        <div class="text-3xl font-black mb-1" style="color: var(--text-primary);">${result.level || 1}</div>
+                        <div class="text-base font-black opacity-60" style="color: var(--text-secondary);">레벨</div>
                     </div>
-                    <div class="py-3">
-                        <div class="text-2xl mb-1">⭐</div>
-                        <div class="text-2xl font-black mb-1" style="color: var(--text-primary);">${result.score || 0}</div>
-                        <div class="text-sm font-black" style="color: var(--text-secondary);">점수</div>
+                    <div class="py-4">
+                        <div class="text-3xl mb-1">⭐</div>
+                        <div class="text-3xl font-black mb-1" style="color: var(--text-primary);">${result.score || 0}</div>
+                        <div class="text-base font-black opacity-60" style="color: var(--text-secondary);">점수</div>
                     </div>
                 </div>
                 
                 ${result.level >= 3 ? `
-                    <div class="bg-yellow p-4 mb-5 rounded-2xl max-w-sm mx-auto">
-                        <div class="text-3xl mb-1">⚡</div>
-                        <p class="text-base font-black" style="color: var(--text-primary);">
+                    <div class="bg-yellow p-5 mb-8 rounded-2xl max-w-sm mx-auto shadow-notion">
+                        <div class="text-4xl mb-2">⚡</div>
+                        <p class="text-lg font-black" style="color: var(--text-primary);">
                             레벨 ${result.level}까지! 에너지가 넘쳐요!
                         </p>
                     </div>
                 ` : ''}
                 
                 <!-- 다시 도전하기 버튼 -->
-                <div class="mb-8 max-w-sm mx-auto">
+                <div class="mb-10 max-w-sm mx-auto">
                     <button onclick="actions.startGame()"
-                            class="w-full py-4 min-h-[52px] font-black rounded-xl border-2 border-black shadow-notion bg-black text-base transition-transform active:scale-[0.98]"
+                            class="w-full py-5 min-h-[60px] font-black rounded-2xl border-2 border-black shadow-notion bg-black text-xl transition-transform active:scale-[0.98]"
                             style="color: #ffffff;">
                         한 번 더 하기 🔄
                     </button>
@@ -74,7 +76,7 @@ export function GameResultScreen() {
                 ${domain && ARTISTS_DB[domain] ? `
                 <div class="mb-6 pt-2 pb-6 bg-slate-50/50 rounded-3xl -mx-4 px-4 border border-slate-100/50">
                     <div class="px-6 mb-4 text-left">
-                        <h3 class="text-xl font-black" style="color: var(--text-primary);">오늘의 추천 게임</h3>
+                        <h3 class="text-xl font-black" style="color: var(--text-primary);">함께 즐기면 좋은 아트 게임</h3>
                     </div>
                     <div class="overflow-x-auto px-6 pb-2 -mx-2 px-2" style="scrollbar-width: none; -ms-overflow-style: none;">
                         <style>
