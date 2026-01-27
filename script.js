@@ -55,22 +55,51 @@ function resolveAssetUrl(path) {
 function preloadAllAppAssets() {
     const seen = new Set();
     const urls = [];
+
+    // Collect all artist and masterpiece images
     for (const list of Object.values(ARTISTS_DB)) {
         for (const a of list) {
             if (a.artistImg) {
                 const u = resolveAssetUrl(a.artistImg);
-                if (u && !seen.has(u)) { seen.add(u); urls.push(u); }
+                if (u && !seen.has(u)) {
+                    seen.add(u);
+                    urls.push(u);
+                }
             }
             if (a.masterpieceImage) {
                 const u = resolveAssetUrl(a.masterpieceImage);
-                if (u && !seen.has(u)) { seen.add(u); urls.push(u); }
+                if (u && !seen.has(u)) {
+                    seen.add(u);
+                    urls.push(u);
+                }
             }
         }
     }
-    urls.forEach(url => {
+
+    // Preload images with error handling
+    let loaded = 0;
+    let failed = 0;
+
+    urls.forEach((url, index) => {
         const img = new Image();
-        img.src = url;
+
+        img.onload = () => {
+            loaded++;
+            console.log(`✅ Preloaded (${loaded}/${urls.length}): ${url.split('/').pop()}`);
+        };
+
+        img.onerror = () => {
+            failed++;
+            console.warn(`❌ Failed to preload (${failed}): ${url}`);
+        };
+
+        // Start loading with a slight delay to avoid overwhelming the browser
+        setTimeout(() => {
+            img.src = url;
+        }, index * 10);
     });
+
+    console.log(`🎨 Starting preload of ${urls.length} images...`);
 }
 
 // --- 액션 컨트롤러 ---
@@ -231,9 +260,9 @@ const actions = {
                         
                         <h2 class="text-2xl font-black mb-2" style="color: var(--text-primary);">${p.gameTitle}</h2>
                         <p class="text-sm font-bold mb-4" style="color: var(--text-secondary);">${(() => {
-                            const artistName = getArtistNameOnly(p.title);
-                            return artistName + getKoreanParticle(artistName) + ' 함께';
-                        })()}</p>
+                    const artistName = getArtistNameOnly(p.title);
+                    return artistName + getKoreanParticle(artistName) + ' 함께';
+                })()}</p>
                         
                         <!-- 조작 가이드 -->
                         <div class="bg-white rounded-2xl border-2 border-black px-4 py-3 mb-6">
@@ -905,7 +934,7 @@ function render() {
                 }
             </style>
         </div>`;
-        
+
         // 로딩 문구 순환 (각 메시지 최소 1초씩 보이도록)
         const loadingMessages = [
             '오늘의 아트 세션 준비 중…',
@@ -914,7 +943,7 @@ function render() {
         ];
         let messageIndex = 0;
         const loadingTextEl = document.getElementById('loading-text');
-        
+
         // 기존 타이머 정리
         if (window.loadingInterval) {
             clearInterval(window.loadingInterval);
@@ -924,11 +953,11 @@ function render() {
             clearTimeout(window.loadingTimeout);
             window.loadingTimeout = null;
         }
-        
+
         if (loadingTextEl) {
             // 첫 메시지는 즉시 표시
             loadingTextEl.textContent = loadingMessages[0];
-            
+
             // 각 메시지가 최소 1초씩 보이도록 (페이드 시간 0.3초 포함하여 1.3초 간격)
             window.loadingInterval = setInterval(() => {
                 if (state.currentStep !== 'LOADING') {
@@ -938,7 +967,7 @@ function render() {
                     }
                     return;
                 }
-                
+
                 messageIndex++;
                 if (messageIndex >= loadingMessages.length) {
                     // 모든 메시지가 전환되었으면 더 이상 변경하지 않음
@@ -955,7 +984,7 @@ function render() {
                     }, 1000);
                     return;
                 }
-                
+
                 loadingTextEl.style.opacity = '0';
                 setTimeout(() => {
                     if (loadingTextEl && state.currentStep === 'LOADING') {
@@ -1192,7 +1221,7 @@ window.toggleSFX = toggleSFX;
 window.toggleVibration = toggleVibration;
 
 // 명화 클립 같이 보기 토글
-window.toggleMasterpieceClip = function(checked) {
+window.toggleMasterpieceClip = function (checked) {
     state.showMasterpieceClip = checked;
     localStorage.setItem('showMasterpieceClip', checked ? 'true' : 'false');
     console.log('명화 클립 같이 보기:', checked);

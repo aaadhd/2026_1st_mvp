@@ -1,12 +1,12 @@
 # Netlify 설정 파일
-# 수동 배포를 위한 기본 설정
+# Vite 프로젝트 배포 설정
 
 [build]
-  # 빌드 명령어 (필요시)
-  # command = "npm run build"
+  # Vite 빌드 명령어
+  command = "npm run build"
   
-  # 배포할 디렉토리 (정적 파일이므로 현재 디렉토리)
-  publish = "."
+  # Vite 빌드 결과물 디렉토리
+  publish = "dist"
 
 # 리다이렉트 설정 (SPA를 위한 fallback)
 [[redirects]]

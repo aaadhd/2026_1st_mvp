@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,7 +14,19 @@
     <!-- Custom Fonts: Playfair Display (English) & Gowun Batang (Korean) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+
+    <!-- Preload Critical Images -->
+    <link rel="preload" as="image" href="/images/painters/정서_따뜻한 이암.png">
+    <link rel="preload" as="image" href="/images/painters/정서_행복한 르누아르.png">
+    <link rel="preload" as="image" href="/images/painters/정서_꿈꾸는 샤갈.png">
+    <link rel="preload" as="image" href="/images/painters/정서_강렬한 고흐.png">
+    <link rel="preload" as="image" href="/images/artworks/yiam_mother_dog.jpg">
+    <link rel="preload" as="image" href="/images/artworks/renoir_luncheon.jpg">
+    <link rel="preload" as="image" href="/images/artworks/chagall_lovers.jpg">
+    <link rel="preload" as="image" href="/images/artworks/gogh_sunflowers.jpg">
 
     <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -61,8 +74,7 @@
 <body class="bg-[#f0ece3] flex items-center justify-center min-h-screen text-stone-800 select-none overflow-hidden">
 
     <!-- Application Root -->
-    <div id="app"
-        class="relative w-full max-w-md gallery-frame overflow-hidden flex flex-col font-sans app-root">
+    <div id="app" class="relative w-full max-w-md gallery-frame overflow-hidden flex flex-col font-sans app-root">
         <!-- Paper Texture Overlay -->
         <div class="texture-paper fixed inset-0"></div>
 
@@ -70,11 +82,9 @@
     </div>
 
     <!-- 🛠️ 개발용 스킵 버튼 (앱 바깥) -->
-    <button id="dev-skip-btn" 
-            onclick="actions.skipFlow()"
-            class="fixed bottom-6 right-6 z-[9999] bg-orange px-4 py-3 rounded-xl border-3 border-black shadow-notion-lg font-black text-sm opacity-90 hover:opacity-100 transition-all hover:scale-105 active:scale-95 hidden"
-            style="color: var(--text-primary); box-shadow: 4px 4px 0 rgba(0, 0, 0, 1);"
-            title="개발 모드: Shift+D로 토글">
+    <button id="dev-skip-btn" onclick="actions.skipFlow()"
+        class="fixed bottom-6 right-6 z-[9999] bg-orange px-4 py-3 rounded-xl border-3 border-black shadow-notion-lg font-black text-sm opacity-90 hover:opacity-100 transition-all hover:scale-105 active:scale-95 hidden"
+        style="color: var(--text-primary); box-shadow: 4px 4px 0 rgba(0, 0, 0, 1);" title="개발 모드: Shift+D로 토글">
         ⏭️ 스킵
     </button>
 
