@@ -111,8 +111,7 @@ export function TuningScreen(step) {
                         <div class="text-lg font-black mb-1">${choice.t1}</div>
                         <div class="text-sm font-bold opacity-90">${choice.artist1}</div>
                     </div>
-                    <!-- Colorful corner accent -->
-                    <div class="absolute top-3 right-3 w-8 h-8 ${color1} rounded-full border-2 border-black"></div>
+
                 </div>
             </div>
             
@@ -129,8 +128,7 @@ export function TuningScreen(step) {
                         <div class="text-lg font-black mb-1">${choice.t2}</div>
                         <div class="text-sm font-bold opacity-90">${choice.artist2}</div>
                     </div>
-                    <!-- Colorful corner accent -->
-                    <div class="absolute top-3 right-3 w-8 h-8 ${color2} rounded-full border-2 border-black"></div>
+
                 </div>
             </div>
         </div>
