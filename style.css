@@ -19,7 +19,7 @@
   
   --google-font: 'Google Sans', 'Noto Sans KR', sans-serif;
   
-  /* Safe Area Insets (삼성 S25 노치/펀치홀 대응) */
+  /* Safe Area Insets (iPhone 노치·Android 펀치홀 공통) */
   --safe-area-inset-top: env(safe-area-inset-top, 0px);
   --safe-area-inset-right: env(safe-area-inset-right, 0px);
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
@@ -53,10 +53,16 @@ body {
   overflow: hidden;
 }
 
-#app {
+/* 앱 루트: iPhone·Android 공통 (노치/다이나믹 아일랜드/펀치홀 대응) */
+#app,
+.app-root {
   width: 100%;
   max-width: 430px;
-  height: 100dvh; /* 동적 뷰포트 높이 (모바일 최적화) */
+  /* iOS Safari 주소창 변동 시에도 높이 안정화 */
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  height: 100vh; /* fallback (dvh 미지원 시) */
+  height: 100dvh; /* 지원 브라우저에서 사용 */
   /* Clean white background */
   background: #FFFFFF;
   position: relative;
@@ -64,7 +70,7 @@ body {
   /* Thick black border for Notion style */
   border: 3px solid var(--border-thick);
   box-shadow: 6px 6px 0 rgba(0, 0, 0, 1);
-  /* Safe area 대응 */
+  /* Safe area 대응 (iPhone 노치, Android 펀치홀 공통) */
   padding-top: var(--safe-area-inset-top);
   padding-bottom: var(--safe-area-inset-bottom);
   padding-left: var(--safe-area-inset-left);
@@ -90,7 +96,7 @@ h4 {
   letter-spacing: -0.01em;
 }
 
-/* 모바일 폰트 크기 최적화 (삼성 S25) */
+/* 모바일 폰트 크기 최적화 (iPhone·Android 공통) */
 @media (max-width: 480px) {
   body {
     font-size: var(--mobile-font-base);
@@ -392,7 +398,7 @@ body:not(.using-mouse) *:focus {
 }
 
 /* ============================================
-   삼성 S25 모바일 최적화
+   모바일 공통 최적화 (iPhone·Android)
    ============================================ */
 
 /* Safe Area 대응 */
@@ -431,7 +437,7 @@ a, button, [role="button"], [onclick] {
   img {
     max-width: 100%;
     height: auto;
-    image-rendering: -webkit-optimize-contrast; /* 삼성 디바이스 최적화 */
+    image-rendering: -webkit-optimize-contrast; /* 고해상도 디스플레이 보정 */
   }
 }
 
