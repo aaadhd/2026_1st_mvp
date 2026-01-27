@@ -51,9 +51,9 @@ export function ResultScreen(p) {
                             class="w-full py-5 min-h-[56px] rounded-2xl text-xl font-black border-2 border-black shadow-notion ${artistColor} relative hover:scale-105 transition-transform"
                             style="color: ${artistColor.includes('bg-red') || artistColor.includes('bg-blue') ? '#ffffff' : 'var(--text-primary)'};">
                         ${(() => {
-                            const artistName = getArtistNameOnly(p.title);
-                            return artistName + getKoreanParticle(artistName) + ' 아트 세션 시작하기';
-                        })()}
+            const artistName = getArtistNameOnly(p.title);
+            return artistName + getKoreanParticle(artistName) + ' 아트 세션 시작하기';
+        })()}
                     </button>
                 </div>
             </div>

@@ -31,9 +31,9 @@ export function GameResultScreen() {
                     </div>
                     <p class="text-center font-black text-xl mb-2" style="color: var(--text-primary);">게임 종료!</p>
                     <p class="text-base font-bold" style="color: var(--text-secondary);">${(() => {
-                        const artistName = getArtistNameOnly(p.title);
-                        return p.title + getKoreanParticle(artistName) + ' 함께한 시간';
-                    })()}</p>
+            const artistName = getArtistNameOnly(p.title);
+            return p.title + getKoreanParticle(artistName) + ' 함께한 시간';
+        })()}</p>
                 </div>
                 
                 <!-- 통계 카드 - 배경색 제거 -->
