@@ -14,7 +14,8 @@ export function GameResultScreen() {
 
     return `<div class="h-full flex flex-col bg-white">
         <!-- Standard Header with Divider (Visual Consistency) -->
-        <div class="p-4 bg-white border-b-2 border-black flex justify-between items-center flex-shrink-0">
+        <div class="p-3 bg-white border-b-2 border-black flex justify-between items-center flex-shrink-0">
+            <!-- Share button removed for MVP 1.0 -->
             <div class="w-12"></div>
             <div class="flex-1"></div>
             <button onclick="window.openSettingsModal()" 
@@ -25,30 +26,31 @@ export function GameResultScreen() {
         
         <!-- 전체 스크롤 영역 (게임 플레이와 동일한 상단 간격) -->
         <div class="flex-1 overflow-y-auto scroll-safe-bottom">
-            <div class="px-6 text-center pt-6 pb-8">
+            <div class="px-6 text-center pt-12 pb-8">
                 <!-- 게임 이모지 + 타이틀 (이미지 스타일) -->
-                <div class="mb-8 mt-4">
-                    <div class="w-28 h-28 mx-auto mb-6 flex items-center justify-center rounded-full bg-pink-100/80 border border-pink-200/60 shadow-inner">
-                        <span class="text-6xl">${p.gameEmoji || '💪'}</span>
+                <div class="mb-6 mt-2">
+                    <div class="w-24 h-24 mx-auto mb-4 flex items-center justify-center rounded-full bg-pink-100/80 border border-pink-200/60 shadow-inner">
+                        <span class="text-5xl">${p.gameEmoji || '💪'}</span>
                     </div>
-                    <h2 class="text-center font-black text-4xl mb-3" style="color: var(--text-primary);">게임 종료!</h2>
-                    <p class="text-xl font-bold opacity-80" style="color: var(--text-secondary);">${(() => {
+                    <!-- '신나는 그림약방' 컨셉 원복: 에너제틱한 타이틀 -->
+                    <h2 class="text-center font-black text-3xl mb-2" style="color: var(--text-primary);">게임 종료!</h2>
+                    <p class="text-lg font-bold opacity-80 mb-6" style="color: var(--text-secondary);">${(() => {
             const artistName = getArtistNameOnly(p.title);
             return p.title + getKoreanParticle(artistName) + ' 함께한 시간';
         })()}</p>
                 </div>
                 
                 <!-- 통계 카드 - 배경색 제거 -->
-                <div class="grid grid-cols-2 gap-6 mb-8 max-w-xs mx-auto">
-                    <div class="py-4">
-                        <div class="text-3xl mb-1">🏆</div>
+                <div class="grid grid-cols-2 gap-4 mb-8 max-w-xs mx-auto">
+                    <div class="py-2">
+                        <div class="text-2xl mb-1">🏆</div>
                         <div class="text-3xl font-black mb-1" style="color: var(--text-primary);">${result.level || 1}</div>
-                        <div class="text-base font-black opacity-60" style="color: var(--text-secondary);">레벨</div>
+                        <div class="text-sm font-black opacity-60" style="color: var(--text-secondary);">레벨</div>
                     </div>
-                    <div class="py-4">
-                        <div class="text-3xl mb-1">⭐</div>
+                    <div class="py-2">
+                        <div class="text-2xl mb-1">⭐</div>
                         <div class="text-3xl font-black mb-1" style="color: var(--text-primary);">${result.score || 0}</div>
-                        <div class="text-base font-black opacity-60" style="color: var(--text-secondary);">점수</div>
+                        <div class="text-sm font-black opacity-60" style="color: var(--text-secondary);">점수</div>
                     </div>
                 </div>
                 
@@ -60,6 +62,18 @@ export function GameResultScreen() {
                         </p>
                     </div>
                 ` : ''}
+
+                <!-- 오늘의 영감 카드 (Closing Sentiment) -->
+                <div class="mb-8 p-6 bg-slate-50 rounded-3xl border border-slate-200/60 max-w-sm mx-auto shadow-sm">
+                    <div class="text-xs font-bold tracking-widest text-slate-400 mb-3 uppercase">Today's Inspiration</div>
+                    <div class="text-3xl font-black mb-3" style="color: ${p.textColor};">
+                        ${p.sub}
+                    </div>
+                    <div class="w-10 h-1 bg-gray-200 mx-auto rounded-full mb-4"></div>
+                    <div class="text-base font-medium leading-relaxed break-keep opacity-90 font-serif" style="color: var(--text-secondary);">
+                        "${p.masterpieceDesc}"
+                    </div>
+                </div>
                 
                 <!-- 다시 도전하기 버튼 -->
                 <div class="mb-10 max-w-sm mx-auto">

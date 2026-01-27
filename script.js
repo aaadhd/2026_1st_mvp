@@ -23,7 +23,7 @@ import { StackGame } from './js/games/StackGame.js';
 
 // --- 데이터 및 상태 관리 ---
 import { ARTISTS_DB, MATCH_REASONS } from './js/data/artists.js';
-import { SCREENING_POOL } from './js/data/screening_pool.js';
+import { SCREENING_ASSETS, SCREENING_PAIRS } from './js/data/screening_pool.js';
 import { state, analytics } from './js/core/state.js';
 import { getArtistDomain, getArtistColor, getGameGuide, getKoreanParticle, getArtistNameOnly } from './js/ui/utils.js';
 
@@ -78,8 +78,8 @@ function preloadAllAppAssets() {
     }
 
     // Collect all screening pool images
-    if (SCREENING_POOL) {
-        SCREENING_POOL.forEach(item => {
+    if (SCREENING_ASSETS) {
+        SCREENING_ASSETS.forEach(item => {
             if (item.img) {
                 const u = resolveAssetUrl(item.img);
                 if (u && !seen.has(u)) {
@@ -99,12 +99,10 @@ function preloadAllAppAssets() {
 
         img.onload = () => {
             loaded++;
-            console.log(`✅ Preloaded (${loaded}/${urls.length}): ${url.split('/').pop()}`);
         };
 
         img.onerror = () => {
             failed++;
-            console.warn(`❌ Failed to preload (${failed}): ${url}`);
         };
 
         // Start loading with a slight delay to avoid overwhelming the browser
@@ -112,12 +110,7 @@ function preloadAllAppAssets() {
             img.src = url;
         }, index * 10);
     });
-
-    console.log(`🎨 Starting preload of ${urls.length} images...`);
 }
-
-// --- 액션 컨트롤러 ---
-// (데이터, 상태, 화면 컴포넌트는 위에서 import됨)
 
 // --- 액션 컨트롤러 ---
 const actions = {
@@ -233,6 +226,33 @@ const actions = {
     goBackToResult: () => {
         changeStep('RESULT');
     },
+    // 공유하기 기능 (Web Share API)
+    shareResult: () => {
+        const title = "신나는 그림약방";
+        let text = "";
+        const url = window.location.href;
+
+        if (state.currentStep === 'RESULT' && state.persona) {
+            text = `나의 아트 메이트는 [${state.persona.title}]입니다! 당신의 아트 메이트도 찾아보세요.`;
+        } else if (state.currentStep === 'GAME_RESULT' && state.lastGameResult) {
+            text = `그림약방 아트 세션에서 ${state.lastGameResult.score}점을 기록했어요! 함께 즐겨봐요.`;
+        } else {
+            text = "그림과 게임으로 마음을 채우는 신나는 그림약방, 함께해요!";
+        }
+
+        if (navigator.share) {
+            navigator.share({ title, text, url })
+                .then(() => analytics.log('share_success', { step: state.currentStep }))
+                .catch((err) => console.log('공유 실패:', err));
+        } else {
+            // Fallback: Copy to clipboard
+            navigator.clipboard.writeText(`\${text}\n\${url}`).then(() => {
+                showToast("링크가 클립보드에 복사되었습니다!");
+                analytics.log('share_fallback_copy', { step: state.currentStep });
+            });
+        }
+    },
+
 
     // 빠른 접근: 게임만 (인트로 모달 포함)
     startGameDirectly: () => {
@@ -257,7 +277,8 @@ const actions = {
         changeStep('PLAYING');
 
         const p = state.persona;
-        const guide = getGameGuide(p.mechanic);
+        const artistName = getArtistNameOnly(p.title);
+        const guide = getGameGuide(p.mechanic, artistName);
         const artistColor = getArtistColor(p.id);
 
         // Wait for DOM
@@ -1634,14 +1655,12 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// 앱 시작 시 로컬 이미지(화가·명화) 미리 로드 — DOM 준비되는 즉시 시작
-document.addEventListener('DOMContentLoaded', () => {
+// 🚀 앱 초기화
+function initializeApp() {
+    // 1. 프리로딩 시작
     preloadAllAppAssets();
-});
 
-// 접근성: Focus 표시
-document.addEventListener('DOMContentLoaded', () => {
-    // 탭 키 사용 시에만 focus outline 표시
+    // 2. 접근성 설정
     document.body.addEventListener('mousedown', () => {
         document.body.classList.add('using-mouse');
     });
@@ -1651,9 +1670,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('using-mouse');
         }
     });
-});
 
-window.onload = () => {
+    // 3. 세션 시작 로그
     analytics.log('session_start', {
         userAgent: navigator.userAgent,
         screenSize: `${window.innerWidth}x${window.innerHeight}`,
@@ -1662,7 +1680,7 @@ window.onload = () => {
         sfxEnabled: state.settings.sfxEnabled
     });
 
-    // 🛠️ 개발 모드 버튼 초기화
+    // 4. 개발 모드 버튼 초기화
     const devBtn = document.getElementById('dev-skip-btn');
     if (devBtn) {
         devBtn.classList.toggle('hidden', !state.devMode);
@@ -1671,9 +1689,7 @@ window.onload = () => {
         }
     }
 
-    render();
-
-    // 첫 방문 환영 메시지
+    // 5. 첫 방문 환영 메시지
     if (!localStorage.getItem('visited')) {
         setTimeout(() => {
             const app = document.getElementById('app');
@@ -1702,4 +1718,14 @@ window.onload = () => {
             }
         }, 1000);
     }
-};
+
+    // 6. 초기 가동
+    render();
+}
+
+// DOM 준비 완료 시 실행
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}

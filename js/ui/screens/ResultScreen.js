@@ -7,7 +7,10 @@ export function ResultScreen(p) {
     return `<div class="h-full flex flex-col bg-white">
         <!-- 상단 헤더 -->
         <div class="p-3 bg-white border-b-2 border-black flex justify-between items-center flex-shrink-0">
-            <div class="w-12"></div>
+            <button onclick="actions.shareResult()" 
+                    class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
+                <i data-lucide="share-2" width="24" style="color: var(--text-primary);"></i>
+            </button>
             <span class="font-black text-lg flex items-center gap-2" style="color: var(--text-primary);">
                 <span class="text-2xl">${p.artistEmoji}</span>
                 <span>오늘의 아트 메이트</span>
@@ -19,9 +22,9 @@ export function ResultScreen(p) {
         </div>
         
         <!-- 컨텐츠 영역 (flex-1로 남은 공간 채움, 세로 중앙 정렬) -->
-        <div class="flex-1 flex flex-col items-center justify-center px-6 py-4 overflow-y-auto">
+        <div class="flex-1 flex flex-col items-center justify-center px-6 pt-14 pb-10 overflow-y-auto animate-fade-in-up">
             <!-- Artist Image -->
-            <div class="relative w-40 h-40 mb-4 rotate-slight flex-shrink-0">
+            <div class="relative w-40 h-40 mb-6 rotate-slight flex-shrink-0">
                 <div class="w-full h-full rounded-3xl border-2 border-black ${artistColor} flex items-center justify-center shadow-notion-lg overflow-hidden">
                     <img src="${p.artistImg}" 
                          class="w-full h-full object-contain" 
@@ -34,8 +37,12 @@ export function ResultScreen(p) {
             </div>
             
             <!-- 제목 및 설명 -->
-            <h2 class="text-3xl font-black mb-4 leading-tight font-serif text-center" style="color: var(--text-primary);">${p.title}</h2>
-            <p class="text-lg leading-relaxed mb-4 px-2 text-center" style="color: var(--text-secondary);">${formatMatchReason(p.matchReason)}</p>
+            <h2 class="text-2xl font-black mb-4 leading-tight font-serif text-center" style="color: var(--text-primary);">${p.title}</h2>
+            <div class="px-2 text-center flex-1 min-h-0 overflow-y-auto">
+                <p class="text-lg leading-relaxed mb-4" style="color: var(--text-secondary); line-height: 1.6;">
+                    ${formatMatchReason(p.matchReason)}
+                </p>
+            </div>
         </div>
         
         <!-- 하단 버튼 영역 (고정 위치) -->
