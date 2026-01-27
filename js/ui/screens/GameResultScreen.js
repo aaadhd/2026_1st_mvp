@@ -13,8 +13,8 @@ export function GameResultScreen() {
     if (!result || !p) return '<div>Loading...</div>';
 
     return `<div class="h-full flex flex-col bg-white">
-        <!-- Header with Menu -->
-        <div class="absolute top-0 right-0 p-4 z-20">
+        <!-- Header with Menu (노치/다이나믹 아일랜드 회피) -->
+        <div class="screen-header-actions">
             <button onclick="window.openSettingsModal()" 
                     class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
                 <i data-lucide="menu" width="24" style="color: var(--text-primary);"></i>
@@ -22,8 +22,8 @@ export function GameResultScreen() {
         </div>
         
         <!-- 전체 스크롤 영역 -->
-        <div class="flex-1 overflow-y-auto">
-            <div class="px-6 pt-8 pb-8 text-center">
+        <div class="flex-1 overflow-y-auto scroll-safe-bottom">
+            <div class="px-6 text-center" style="padding-top: max(2rem, calc(env(safe-area-inset-top) + 2rem)); padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));">
                 <!-- 게임 이모지 + 타이틀 (이미지 스타일) -->
                 <div class="mb-6">
                     <div class="w-20 h-20 mx-auto mb-4 flex items-center justify-center rounded-full bg-pink-100/80 border border-pink-200/60">

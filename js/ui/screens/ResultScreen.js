@@ -4,9 +4,9 @@ import { formatMatchReason, getArtistColor, getKoreanParticle, getArtistNameOnly
 export function ResultScreen(p) {
     const artistColor = getArtistColor(p.id);
 
-    return `<div class="h-full flex flex-col bg-white overflow-y-auto">
-        <!-- Header with Menu -->
-        <div class="absolute top-0 right-0 p-4 z-20">
+    return `<div class="h-full flex flex-col bg-white overflow-y-auto scroll-safe-bottom">
+        <!-- Header with Menu (노치/다이나믹 아일랜드 회피) -->
+        <div class="screen-header-actions">
             <button onclick="window.openSettingsModal()" 
                     class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
                 <i data-lucide="menu" width="24" style="color: var(--text-primary);"></i>
@@ -14,7 +14,7 @@ export function ResultScreen(p) {
         </div>
         
         <div id="result-card" class="min-h-full flex flex-col bg-white">
-            <div class="relative pt-8 pb-6 flex flex-col items-center">
+            <div class="relative pt-14 pb-6 flex flex-col items-center" style="padding-top: max(3.5rem, calc(env(safe-area-inset-top) + 2rem));">
                 <!-- Badge without box - clean and minimal -->
                 <div class="inline-flex items-center gap-2 mb-4">
                     <span class="text-2xl">${p.artistEmoji}</span>
@@ -60,8 +60,8 @@ export function ResultScreen(p) {
                 
                 <div class="h-4"></div> <!-- Spacer after main button -->
                 
-                <!-- 하단 액션 (선택 다시하기 / 둘러보기) -->
-                <div class="w-full max-w-xs flex flex-col gap-3">
+                <!-- 하단 액션 (선택 다시하기 / 둘러보기) - 홈 인디케이터 여백 확보 -->
+                <div class="w-full max-w-xs flex flex-col gap-3" style="padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));">
                     <div class="flex gap-3">
                         <button onclick="actions.startTuning()" 
                                 class="flex-1 py-4 min-h-[48px] bg-white border-2 border-black rounded-xl text-base font-bold shadow-notion flex items-center justify-center gap-2"

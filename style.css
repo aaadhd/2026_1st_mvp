@@ -467,6 +467,23 @@ input, textarea, select {
   }
 }
 
+/* 화면별 우상단 메뉴 버튼: 노치/다이나믹 아일랜드 밖에 두기 */
+.screen-header-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 20;
+  padding-top: max(16px, env(safe-area-inset-top, 16px));
+  padding-right: max(16px, env(safe-area-inset-right, 16px));
+  padding-bottom: 16px;
+  padding-left: 16px;
+}
+
+/* 스크롤 영역 하단: 홈 인디케이터 위까지 여백 확보 */
+.scroll-safe-bottom {
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+}
+
 /* 모바일 헤더/푸터 최적화 */
 @media (max-width: 480px) {
   /* 상단 헤더 */
