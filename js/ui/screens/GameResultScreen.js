@@ -16,7 +16,7 @@ export function GameResultScreen() {
         <!-- Standard Header with Divider (Visual Consistency) -->
         <div class="p-4 bg-white border-b-2 border-black flex justify-between items-center flex-shrink-0">
             <div class="w-12"></div>
-            <span class="font-black text-lg" style="color: var(--text-primary);">게임 결과</span>
+            <div class="flex-1"></div>
             <button onclick="window.openSettingsModal()" 
                     class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
                 <i data-lucide="menu" width="24" style="color: var(--text-primary);"></i>
