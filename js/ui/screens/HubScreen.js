@@ -1,29 +1,9 @@
 // Hub 화면 (다른 아트 메이트들)
 import { ARTISTS_DB } from '../../data/artists.js';
 import { state } from '../../core/state.js';
+import { DOMAIN_COLORS, DOMAIN_LABELS, DOMAIN_EMOJIS } from '../utils.js';
 
 export function HubScreen(p) {
-    const domains = {
-        'EMOTION': '정서',
-        'COGNITION': '인지',
-        'SOCIAL': '사회',
-        'SENSORY': '감각'
-    };
-
-    const categoryColors = {
-        'EMOTION': 'bg-red',
-        'COGNITION': 'bg-blue',
-        'SOCIAL': 'bg-green',
-        'SENSORY': 'bg-yellow'
-    };
-
-    const categoryEmojis = {
-        'EMOTION': '❤️',
-        'COGNITION': '🧠',
-        'SOCIAL': '🤝',
-        'SENSORY': '✨'
-    };
-
     const currentTab = state.currentHubTab || 'ALL';
 
     // 필터링된 게임 목록
@@ -44,13 +24,13 @@ export function HubScreen(p) {
 
     return `<div class="h-full flex flex-col bg-white">
         <div class="px-6 py-4 bg-white border-b-2 border-black flex justify-between items-center sticky top-0 z-10">
-            <button onclick="actions.goBackToCompanion()" class="w-10 h-10 rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion">
-                <i data-lucide="arrow-left" width="20" style="color: var(--text-primary);"></i>
+            <button onclick="actions.goBackToCompanion()" class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion">
+                <i data-lucide="arrow-left" width="24" style="color: var(--text-primary);"></i>
             </button>
-            <span class="font-black text-lg" style="color: var(--text-primary);">아트 플레이</span>
+            <span class="font-black text-lg" style="color: var(--text-primary);">아트 게임 모아보기</span>
             <button onclick="window.openSettingsModal()" 
-                    class="w-10 h-10 rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
-                <i data-lucide="menu" width="20" style="color: var(--text-primary);"></i>
+                    class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
+                <i data-lucide="menu" width="24" style="color: var(--text-primary);"></i>
             </button>
         </div>
 
@@ -59,12 +39,12 @@ export function HubScreen(p) {
                 <!-- 1. Today's Recommended - Notion Style -->
                 <section>
                     <h3 class="text-sm font-black mb-4 flex items-center gap-2" style="color: var(--text-primary);">
-                        <span class="text-xl">⭐</span> 오늘의 아트 메이트
+                        <span class="text-xl">⭐</span> 오늘의 추천 아트 게임
                     </h3>
                     <div onclick="actions.startLevelIntro()" class="notion-card p-5 bg-yellow cursor-pointer">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
-                                <div class="text-xs font-black mb-1" style="color: var(--text-secondary);">${p.sub} · ${p.title}</div>
+                                <div class="text-sm font-black mb-1" style="color: var(--text-secondary);">${p.sub} · ${p.title}</div>
                                 <div class="text-2xl font-black mb-2" style="color: var(--text-primary);">${p.gameTitle}</div>
                                 <div class="text-sm font-bold" style="color: var(--text-primary);">${p.desc}</div>
                             </div>
@@ -73,21 +53,38 @@ export function HubScreen(p) {
                     </div>
                 </section>
 
+                <!-- 명화 클립 같이 보기 체크박스 -->
+                <section>
+                    <label class="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-black/10 cursor-pointer hover:bg-gray-100 transition-colors" onclick="event.stopPropagation()">
+                        <input type="checkbox" 
+                               id="masterpiece-clip-checkbox"
+                               ${state.showMasterpieceClip !== false ? 'checked' : ''}
+                               onchange="if(window.toggleMasterpieceClip) window.toggleMasterpieceClip(this.checked);"
+                               onclick="event.stopPropagation()"
+                               class="mt-1 w-6 h-6 min-w-[24px] min-h-[24px] rounded border-2 border-black cursor-pointer flex-shrink-0"
+                               style="accent-color: black;">
+                        <div class="flex-1" onclick="event.stopPropagation()">
+                            <div class="font-black text-base mb-1" style="color: var(--text-primary);">명화 클립 같이 보기</div>
+                            <div class="text-sm font-bold" style="color: var(--text-secondary);">선택하면 클립 게임으로 이어져요</div>
+                        </div>
+                    </label>
+                </section>
+
                 <!-- 2. Tab Buttons - Notion Style -->
                 <section>
                     <div class="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2">
                         <button onclick="actions.setHubTab('ALL')" 
-                                class="flex-shrink-0 px-4 py-2 rounded-xl border-2 border-black shadow-notion font-black text-sm ${currentTab === 'ALL' ? 'bg-blue' : 'bg-white'}"
+                                class="flex-shrink-0 px-5 py-3 rounded-xl border-2 border-black shadow-notion font-black text-sm min-h-[48px] flex items-center ${currentTab === 'ALL' ? 'bg-blue' : 'bg-white'}"
                                 style="color: var(--text-primary);">
                             전체
                         </button>
-                        ${Object.keys(domains).map(domain => {
+                        ${Object.keys(DOMAIN_LABELS).map(domain => {
         const isActive = currentTab === domain;
-        const color = isActive ? categoryColors[domain] : 'bg-white';
-        return `<button onclick="actions.setHubTab('${domain}')" 
-                                    class="flex-shrink-0 px-4 py-2 rounded-xl border-2 border-black shadow-notion font-black text-sm ${color}"
+        const color = isActive ? DOMAIN_COLORS[domain] : 'bg-white';
+        return `<button onclick="actions.setHubTab('${domain}')"
+                                    class="flex-shrink-0 px-5 py-3 rounded-xl border-2 border-black shadow-notion font-black text-sm min-h-[48px] flex items-center ${color}"
                                     style="color: var(--text-primary);">
-                                ${categoryEmojis[domain]} ${domains[domain]}
+                                ${DOMAIN_EMOJIS[domain]} ${DOMAIN_LABELS[domain]}
                             </button>`;
     }).join('')}
                     </div>
@@ -97,23 +94,23 @@ export function HubScreen(p) {
                 ${filteredGames.map(({ domain, games }) => {
         if (games.length === 0) return '';
 
-        const categoryColor = categoryColors[domain] || 'bg-blue';
-        const categoryEmoji = categoryEmojis[domain] || '🎨';
+        const domainColor = DOMAIN_COLORS[domain] || 'bg-blue';
+        const domainEmoji = DOMAIN_EMOJIS[domain] || '🎨';
 
         return `<section>
                         ${currentTab === 'ALL' ? `
                             <h3 class="text-sm font-black mb-4 flex items-center gap-2" style="color: var(--text-primary);">
-                                <span class="text-lg">${categoryEmoji}</span> ${domains[domain]} Care
+                                <span class="text-lg">${domainEmoji}</span> ${DOMAIN_LABELS[domain]}
                             </h3>
                         ` : ''}
                         <div class="grid grid-cols-2 gap-3">
                             ${games.map(g => {
             const isCurrent = g.id === p.id;
-            const cardColor = isCurrent ? categoryColor : 'bg-white';
+            const cardColor = isCurrent ? domainColor : 'bg-white';
             return `<div onclick="actions.playNext('${g.id}')" class="notion-card p-4 ${cardColor} cursor-pointer flex flex-col items-center text-center">
                                     <div class="text-3xl mb-2">${g.gameEmoji}</div>
                                     <div class="font-black text-sm leading-tight mb-1" style="color: var(--text-primary);">${g.gameTitle}</div>
-                                    <div class="text-xs font-bold" style="color: var(--text-secondary);">${g.sub} · ${g.title}</div>
+                                    <div class="text-sm font-bold" style="color: var(--text-secondary);">${g.sub} · ${g.title}</div>
                                 </div>`;
         }).join('')}
                         </div>

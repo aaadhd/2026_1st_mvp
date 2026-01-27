@@ -25,8 +25,8 @@
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
   --safe-area-inset-left: env(safe-area-inset-left, 0px);
   
-  /* 모바일 최적화 */
-  --touch-target-min: 44px; /* 최소 터치 영역 */
+  /* 모바일 최적화 (시니어 타깃: 터치 48px, 본문 16px) */
+  --touch-target-min: 48px; /* 시니어 권장 최소 터치 영역 */
   --mobile-font-base: 16px; /* 모바일 기본 폰트 */
   --mobile-spacing: 16px; /* 모바일 기본 간격 */
 }
@@ -41,6 +41,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px; /* 시니어 가독성: 본문 최소 16px */
   /* Clean white background */
   background-color: #F5F5F5;
   display: flex;
@@ -665,7 +666,7 @@ input, textarea, select {
 
 .setting-label {
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.875rem; /* 시니어 가독성: 14px */
   color: #000;
 }
 

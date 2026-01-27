@@ -1,29 +1,15 @@
 // 결과 화면 (오늘의 아트 메이트)
-import { ARTISTS_DB } from '../../data/artists.js';
-import { formatMatchReason } from '../utils.js';
+import { formatMatchReason, getArtistColor, getKoreanParticle, getArtistNameOnly } from '../utils.js';
 
 export function ResultScreen(p) {
-    // Map artist to vibrant color
-    const colorMap = {
-        'EMOTION': 'bg-red',
-        'COGNITION': 'bg-blue',
-        'SOCIAL': 'bg-green',
-        'SENSORY': 'bg-yellow'
-    };
-    let artistColor = 'bg-blue';
-    for (const [domain, artists] of Object.entries(ARTISTS_DB)) {
-        if (artists.some(a => a.id === p.id)) {
-            artistColor = colorMap[domain];
-            break;
-        }
-    }
+    const artistColor = getArtistColor(p.id);
 
     return `<div class="h-full flex flex-col bg-white overflow-y-auto">
         <!-- Header with Menu -->
         <div class="absolute top-0 right-0 p-4 z-20">
             <button onclick="window.openSettingsModal()" 
-                    class="w-10 h-10 rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
-                <i data-lucide="menu" width="20" style="color: var(--text-primary);"></i>
+                    class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
+                <i data-lucide="menu" width="24" style="color: var(--text-primary);"></i>
             </button>
         </div>
         
@@ -53,37 +39,41 @@ export function ResultScreen(p) {
                 <h2 class="text-3xl font-black mb-4 leading-tight font-serif" style="color: var(--text-primary);">${p.title}</h2>
                 <p class="text-lg leading-relaxed mb-6 px-2" style="color: var(--text-secondary);">${formatMatchReason(p.matchReason)}</p>
                 
-                <!-- 메인 버튼: 함께 아트 여정 시작하기 -->
-                <button onclick="actions.startLevelIntro()" 
-                        class="w-full max-w-xs py-5 rounded-2xl text-xl font-black border-2 border-black shadow-notion ${artistColor} mb-6 relative hover:scale-105 transition-transform"
-                        style="color: var(--text-primary);">
-                    <div class="absolute -top-3 -right-3 bg-red text-white text-base font-bold px-3 py-1.5 rounded-full border-2 border-black transform rotate-12">
-                        BEST!
+                <!-- 메인 버튼: 화가와 아트 세션 시작하기 -->
+                <div class="w-full max-w-xs mb-6">
+                    <!-- 루틴 스텝 설명 (CTA 상단 고정) -->
+                    <div class="inline-flex items-center gap-2 mb-1 px-3 py-1.5 bg-gray-50 rounded-lg border border-black/10">
+                        <span class="text-sm font-bold" style="color: var(--text-secondary);">🎬 그림 감상</span>
+                        <span class="text-sm" style="color: var(--text-secondary);">→</span>
+                        <span class="text-sm font-bold" style="color: var(--text-secondary);">🎮 아트 게임</span>
                     </div>
-                    함께 여정 떠나기 🚀
-                </button>
+                    
+                    <button onclick="actions.startLevelIntro()" 
+                            class="w-full py-5 min-h-[56px] rounded-2xl text-xl font-black border-2 border-black shadow-notion ${artistColor} relative hover:scale-105 transition-transform"
+                            style="color: ${artistColor.includes('bg-red') || artistColor.includes('bg-blue') ? '#ffffff' : 'var(--text-primary)'};">
+                        ${(() => {
+                            const artistName = getArtistNameOnly(p.title);
+                            return artistName + getKoreanParticle(artistName) + ' 아트 세션 시작하기';
+                        })()}
+                    </button>
+                </div>
                 
                 <div class="h-4"></div> <!-- Spacer after main button -->
                 
-                <!-- 하단 액션 (공유 / 다시하기 / 둘러보기) -->
+                <!-- 하단 액션 (선택 다시하기 / 둘러보기) -->
                 <div class="w-full max-w-xs flex flex-col gap-3">
                     <div class="flex gap-3">
-                        <button onclick="shareResultCard()" 
-                                class="flex-1 py-3 bg-white border-2 border-black rounded-xl text-base font-bold shadow-notion flex items-center justify-center gap-2"
+                        <button onclick="actions.startTuning()" 
+                                class="flex-1 py-4 min-h-[48px] bg-white border-2 border-black rounded-xl text-base font-bold shadow-notion flex items-center justify-center gap-2"
                                 style="color: var(--text-primary);">
-                            <i data-lucide="share-2" width="16"></i> 친구에게 공유
+                            <i data-lucide="refresh-cw" width="16"></i> 선택 다시하기
                         </button>
                         <button onclick="actions.goToHub()" 
-                                class="flex-1 py-3 bg-white border-2 border-black rounded-xl text-base font-bold shadow-notion"
+                                class="flex-1 py-4 min-h-[48px] bg-white border-2 border-black rounded-xl text-base font-bold shadow-notion flex items-center justify-center"
                                 style="color: var(--text-primary);">
-                            다음 충전 장소 탐색
+                            아트 게임 모아보기
                         </button>
                     </div>
-                    
-                    <button onclick="actions.startTuning()" 
-                            class="w-full py-3 text-stone-400 text-base font-bold underline hover:text-stone-600 transition-colors">
-                        테스트 다시 하기 ↻
-                    </button>
                 </div>
             </div>
         </div>

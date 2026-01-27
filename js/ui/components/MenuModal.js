@@ -21,8 +21,8 @@ export function openMenuModal() {
                 <h2 class="text-xl font-black text-white text-center">메뉴</h2>
                 <!-- 우상단 X 버튼 -->
                 <button onclick="window.closeMenuModal()" 
-                        class="absolute top-3 right-3 w-10 h-10 bg-white rounded-xl border-2 border-black shadow-notion flex items-center justify-center hover:bg-gray-50 transition-colors">
-                    <i data-lucide="x" width="20" style="color: var(--text-primary);"></i>
+                        class="absolute top-3 right-3 w-12 h-12 min-w-[48px] min-h-[48px] bg-white rounded-xl border-2 border-black shadow-notion flex items-center justify-center hover:bg-gray-50 transition-colors">
+                    <i data-lucide="x" width="24" style="color: var(--text-primary);"></i>
                 </button>
             </div>
             
@@ -34,17 +34,7 @@ export function openMenuModal() {
                     <div class="text-3xl">⚙️</div>
                     <div class="flex-1 text-left">
                         <div class="font-black text-base" style="color: var(--text-primary);">설정</div>
-                        <div class="text-xs font-bold" style="color: var(--text-secondary);">뮤직, 사운드이펙트, 진동</div>
-                    </div>
-                </button>
-                
-                <!-- 감정 일기 모아보기 -->
-                <button onclick="window.openDiaryList(); window.closeMenuModal();" 
-                        class="w-full py-4 px-4 bg-white rounded-2xl border-2 border-black shadow-notion flex items-center gap-3 hover:bg-gray-50 transition-colors active:scale-95">
-                    <div class="text-3xl">📝</div>
-                    <div class="flex-1 text-left">
-                        <div class="font-black text-base" style="color: var(--text-primary);">감정 일기 모아보기</div>
-                        <div class="text-xs font-bold" style="color: var(--text-secondary);">작성한 일기들을 확인해보세요</div>
+                        <div class="text-sm font-bold" style="color: var(--text-secondary);">뮤직, 사운드이펙트, 진동</div>
                     </div>
                 </button>
                 
@@ -54,7 +44,7 @@ export function openMenuModal() {
                     <div class="text-3xl">🔄</div>
                     <div class="flex-1 text-left">
                         <div class="font-black text-base" style="color: var(--text-primary);">다시 테스트하기</div>
-                        <div class="text-xs font-bold" style="color: var(--text-secondary);">새로운 아트 메이트를 찾아보세요</div>
+                        <div class="text-sm font-bold" style="color: var(--text-secondary);">새로운 아트 메이트를 찾아보세요</div>
                     </div>
                 </button>
             </div>

@@ -69,10 +69,6 @@ export function openSettingsModal() {
                 </div>
 
                 <!-- Action Buttons -->
-                <button onclick="window.openDiaryList(); window.closeSettingsModal();" class="btn-yellow-3d">
-                    감정일기 모아보기
-                </button>
-
                 <button onclick="if(window.actions && window.actions.startTuning) window.actions.startTuning(); window.closeSettingsModal();" class="btn-yellow-3d">
                     다시 테스트하기
                 </button>

@@ -100,5 +100,11 @@ export const state = {
     },
     
     // 🛠️ 개발 모드
-    devMode: localStorage.getItem('devMode') === 'true'
+    devMode: localStorage.getItem('devMode') === 'true',
+    
+    // 명화 클립 같이 보기 설정
+    showMasterpieceClip: (() => {
+        const stored = localStorage.getItem('showMasterpieceClip');
+        return stored === null ? true : stored === 'true'; // 기본값은 true
+    })()
 };

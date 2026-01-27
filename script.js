@@ -24,6 +24,7 @@ import { StackGame } from './js/games/StackGame.js';
 // --- 데이터 및 상태 관리 ---
 import { ARTISTS_DB, MATCH_REASONS } from './js/data/artists.js';
 import { state, analytics } from './js/core/state.js';
+import { getArtistDomain, getArtistColor, getGameGuide, getKoreanParticle, getArtistNameOnly } from './js/ui/utils.js';
 
 // --- 화면 컴포넌트 ---
 import {
@@ -31,13 +32,9 @@ import {
     TuningScreen,
     ResultScreen,
     HubScreen,
-    VideoGalleryScreen,
-    ActivityIntroScreen,
     GameResultScreen,
     MasterpieceScreen,
-    MasterpieceClipScreen,
-    EmotionDiaryScreen,
-    DiaryListScreen
+    MasterpieceClipScreen
 } from './js/ui/screens/index.js';
 
 // --- 모달 컴포넌트 ---
@@ -52,12 +49,27 @@ const actions = {
     startTuning: () => {
         state.tuningStep = 1;
         state.tuningWeights = { EMOTION: 0, COGNITION: 0, SOCIAL: 0, SENSORY: 0 };
+        state.tuningSelectionHistory = [];
+        state.tuningSelectionByStep = {};
         analytics.screeningStartTime = Date.now();
         analytics.log('screening_start');
         changeStep('TUNING');
     },
+    tuningBack: () => {
+        if (state.tuningStep <= 1) return;
+        const lastDomain = state.tuningSelectionHistory.pop();
+        if (lastDomain && state.tuningWeights[lastDomain] > 0) {
+            state.tuningWeights[lastDomain]--;
+        }
+        state.tuningStep--;
+        render();
+    },
     tuningSelect: (domain, choice, artist) => {
         state.tuningWeights[domain]++;
+        state.tuningSelectionHistory = state.tuningSelectionHistory || [];
+        state.tuningSelectionHistory.push(domain);
+        state.tuningSelectionByStep = state.tuningSelectionByStep || {};
+        state.tuningSelectionByStep[state.tuningStep] = domain;
         analytics.log('screening_select', {
             step: state.tuningStep,
             domain: domain,
@@ -79,7 +91,17 @@ const actions = {
                 duration: (Date.now() - analytics.screeningStartTime) / 1000
             });
 
-            setTimeout(() => changeStep('RESULT'), 2000);
+            // 로딩 메시지 순환 로직에서 마지막 메시지 표시 후 자동으로 결과 화면으로 전환됨
+            // 백업 타이머 (혹시 모를 경우를 대비해 6초 후에도 전환)
+            if (window.loadingBackupTimeout) {
+                clearTimeout(window.loadingBackupTimeout);
+            }
+            window.loadingBackupTimeout = setTimeout(() => {
+                if (state.currentStep === 'LOADING') {
+                    changeStep('RESULT');
+                }
+                window.loadingBackupTimeout = null;
+            }, 6000);
         }
     },
     goToHub: () => {
@@ -112,8 +134,14 @@ const actions = {
             artist_id: state.persona.id,
             mechanic: state.persona.mechanic
         });
-        // START THE RITUAL: Result -> Clip -> Activity
-        changeStep('CLIP_INTRO');
+        // 체크박스 상태에 따라 분기
+        if (state.showMasterpieceClip) {
+            // 체크됨: 그림 감상 페이지부터 시작
+            changeStep('CLIP_INTRO');
+        } else {
+            // 체크 안됨: 바로 게임 시작
+            actions.startGame();
+        }
     },
     // proceedToActivity는 제거됨 - startGame()으로 직접 이동
     viewMasterpiece: () => {
@@ -123,30 +151,6 @@ const actions = {
         changeStep('RESULT');
     },
 
-    // 감정 일기
-    goToDiary: () => {
-        changeStep('EMOTION_DIARY');
-    },
-    // 그림 감상 (비디오 갤러리)
-    goToVideoGallery: () => {
-        analytics.log('navigate', { from: state.currentStep, to: 'VIDEO_GALLERY' });
-        state.currentHubTab = 'ALL';
-        changeStep('VIDEO_GALLERY');
-    },
-    // 비디오 재생 (Clip Intro)
-    playVideo: (id) => {
-        const found = Object.values(ARTISTS_DB).flat().find(a => a.id === id);
-        if (found) {
-            state.persona = found;
-            analytics.log('video_play', { artist: id });
-            changeStep('CLIP_INTRO');
-        }
-    },
-
-    // 빠른 접근: 그림 감상만 (ResultScreen에서) -> 비디오 갤러리로 이동
-    viewArtworkOnly: () => {
-        actions.goToVideoGallery();
-    },
     // 빠른 접근: 게임만 (인트로 모달 포함)
     startGameDirectly: () => {
         state.currentLevel = 1;
@@ -159,23 +163,6 @@ const actions = {
         });
         actions.startGame();
     },
-    skipDiary: () => {
-        // 일기 건너뛰고 메이트 화면으로
-        changeStep('RESULT');
-    },
-    completeDiary: () => {
-        // 일기 완료 후 메이트 화면으로 돌아오기
-        changeStep('RESULT');
-
-        // 충전 완료 토스트 표시
-        setTimeout(() => {
-            if (window.showRechargeSuccess) window.showRechargeSuccess();
-        }, 500);
-    },
-    goToDiaryList: () => {
-        changeStep('DIARY_LIST');
-    },
-
     // Start Game (Engine) - Direct to Playing with Tutorial Modal
     startGame: () => {
         analytics.gamesPlayed++;
@@ -186,43 +173,9 @@ const actions = {
         });
         changeStep('PLAYING');
 
-        // 게임별 조작 가이드
-        const guides = {
-            'SHOOT_WATER': '💧 물방울을 터치해서 해바라기에 물을 주세요',
-            'PUZZLE_JIGSAW': '🧩 빈 공간 옆의 조각을 터치해서 이동시켜 그림을 완성하세요',
-            'TOUCH_SMILE': '😊 웃는 얼굴을 빠르게 터치하세요',
-            'TIMING_FISH': '🐟 고양이가 있는 곳에 생선을 터치하세요',
-            'BALANCE_STACK': '🍎 과일이 떨어지는 타이밍에 터치하세요',
-            'RUN_FLOWER': '🌸 꽃을 터치로 모으며 달려가세요',
-            'OBSERVE_MATCH': '🪷 같은 모양의 수련을 찾아 터치하세요',
-            'SWIPE_SORT': '🧺 과일을 드래그해서 바구니에 담으세요',
-            'TRACE_DOT': '✏️ 점들을 순서대로 연결하세요',
-            'MAZE_DRAG': '🏰 드래그로 길을 따라가세요',
-            'FIND_HIDDEN': '🔍 숨어있는 연인을 찾아보세요',
-            'FIND_PERSON': '👥 특정 사람을 찾아 터치하세요',
-            'STICKER_FACE': '🍇 과일을 드래그해서 얼굴을 꾸며보세요',
-            'STICKER_NATURE': '🦋 꽃과 곤충을 배치해보세요',
-            'DRAW_MIRROR': '✍️ 반대편을 똑같이 그려보세요',
-            'COLLAGE_CUTOUT': '✂️ 선을 따라 드래그하세요',
-            'SOUND_CANVAS': '🎵 화면을 터치해 소리를 만들어보세요',
-            'COLORING_FILL': '🎨 색을 선택하고 영역을 터치하세요',
-            'GOLDEN_BRUSH': '✨ 드래그해서 황금빛으로 칠하세요',
-            'LIST_MEMO': '📝 제시된 물건을 기억했다가 선택하세요',
-            'MEMORY_MATCH': '🃏 카드를 뒤집어 같은 그림을 찾으세요',
-            'RHYTHM_TAP': '🎵 음표가 라인에 닿을 때 터치하세요',
-            'QUIZ_FRUIT': '❓ 정답을 터치하세요'
-        };
-
         const p = state.persona;
-        const guide = guides[p.mechanic] || '터치와 드래그로 게임을 즐겨보세요';
-        const colorMap = { 'EMOTION': 'bg-red', 'COGNITION': 'bg-blue', 'SOCIAL': 'bg-green', 'SENSORY': 'bg-yellow' };
-        let artistColor = 'bg-blue';
-        for (const [domain, artists] of Object.entries(ARTISTS_DB)) {
-            if (artists.some(a => a.id === p.id)) {
-                artistColor = colorMap[domain];
-                break;
-            }
-        }
+        const guide = getGameGuide(p.mechanic);
+        const artistColor = getArtistColor(p.id);
 
         // Wait for DOM
         setTimeout(() => {
@@ -242,7 +195,10 @@ const actions = {
                         </div>
                         
                         <h2 class="text-2xl font-black mb-2" style="color: var(--text-primary);">${p.gameTitle}</h2>
-                        <p class="text-sm font-bold mb-4" style="color: var(--text-secondary);">${p.title}와 함께</p>
+                        <p class="text-sm font-bold mb-4" style="color: var(--text-secondary);">${(() => {
+                            const artistName = getArtistNameOnly(p.title);
+                            return artistName + getKoreanParticle(artistName) + ' 함께';
+                        })()}</p>
                         
                         <!-- 조작 가이드 -->
                         <div class="bg-white rounded-2xl border-2 border-black px-4 py-3 mb-6">
@@ -252,7 +208,7 @@ const actions = {
                         <button onclick="this.closest('#game-tutorial-modal').remove(); if (window.startGameAfterTutorial) window.startGameAfterTutorial();" 
                                 class="w-full py-4 text-lg font-black rounded-2xl border-2 border-black shadow-notion ${artistColor}"
                                 style="color: var(--text-primary);">
-                            아트 여정 시작하기 🎨
+                            시작!
                         </button>
                     </div>
                 </div>
@@ -280,13 +236,7 @@ const actions = {
                 }
 
                 // 🎵 Find domain for BGM
-                let domain = 'EMOTION'; // default
-                for (const [key, artists] of Object.entries(ARTISTS_DB)) {
-                    if (artists.some(a => a.id === p.id)) {
-                        domain = key;
-                        break;
-                    }
-                }
+                const domain = getArtistDomain(p.id);
                 state.currentDomain = domain; // Store for recommendations
 
                 let gameInstance;
@@ -765,6 +715,20 @@ const actions = {
             state.engine.stop();
         }
 
+        // 로딩 타이머 정리
+        if (window.loadingInterval) {
+            clearInterval(window.loadingInterval);
+            window.loadingInterval = null;
+        }
+        if (window.loadingTimeout) {
+            clearTimeout(window.loadingTimeout);
+            window.loadingTimeout = null;
+        }
+        if (window.loadingBackupTimeout) {
+            clearTimeout(window.loadingBackupTimeout);
+            window.loadingBackupTimeout = null;
+        }
+
         const flowMap = {
             'INTRO': 'TUNING',
             'TUNING': 'LOADING',
@@ -774,8 +738,7 @@ const actions = {
             'PLAYING': 'GAME_RESULT',
             'GAME_RESULT': 'HUB',
             'HUB': 'RESULT',
-            'MASTERPIECE': 'RESULT',
-            'EMOTION_DIARY': 'HUB'
+            'MASTERPIECE': 'RESULT'
         };
 
         const nextStep = flowMap[state.currentStep];
@@ -783,6 +746,11 @@ const actions = {
             // 필요한 상태 초기화
             if (nextStep === 'RESULT' && !state.persona) {
                 // 페르소나가 없으면 랜덤으로 하나 선택
+                const allArtists = Object.values(ARTISTS_DB).flat();
+                state.persona = allArtists[Math.floor(Math.random() * allArtists.length)];
+            }
+            // LOADING에서 RESULT로 스킵할 때도 persona 확인
+            if (state.currentStep === 'LOADING' && nextStep === 'RESULT' && !state.persona) {
                 const allArtists = Object.values(ARTISTS_DB).flat();
                 state.persona = allArtists[Math.floor(Math.random() * allArtists.length)];
             }
@@ -840,7 +808,7 @@ function changeStep(s) {
     const protectedSteps = ['TUNING', 'PLAYING'];
     if (protectedSteps.includes(s)) {
         enableBackDefense();
-    } else if (s === 'INTRO' || s === 'RESULT' || s === 'HUB' || s === 'VIDEO_GALLERY' || s === 'GAME_RESULT' || s === 'MASTERPIECE' || s === 'CLIP_INTRO' || s === 'DIARY_LIST') {
+    } else if (s === 'INTRO' || s === 'RESULT' || s === 'HUB' || s === 'GAME_RESULT' || s === 'MASTERPIECE' || s === 'CLIP_INTRO') {
         disableBackDefense();
     }
 
@@ -865,21 +833,103 @@ function render() {
     } else if (state.currentStep === 'LOADING') {
         app.innerHTML = `
         <div class="h-full flex flex-col items-center justify-center text-center p-10 bg-white">
-            <!-- Playful loading animation -->
-            <div class="relative w-24 h-24 mb-6">
-                <div class="absolute inset-0 border-3 border-black rounded-full bg-blue" style="animation: spin 2s linear infinite;"></div>
-                <div class="absolute inset-2 border-3 border-black rounded-full bg-yellow" style="animation: spin 1.5s linear infinite reverse;"></div>
-                <div class="absolute inset-4 border-3 border-black rounded-full bg-red" style="animation: spin 1s linear infinite;"></div>
-                <div class="absolute inset-6 border-2 border-black rounded-full bg-white flex items-center justify-center">
-                    <span class="text-2xl">🎨</span>
+            <!-- Playful loading animation with enhanced actions -->
+            <div class="relative w-32 h-32 mb-6">
+                <!-- Outer rotating circles with pulse -->
+                <div class="absolute inset-0 border-3 border-black rounded-full bg-blue" style="animation: spin 2s linear infinite, pulse 2s ease-in-out infinite;"></div>
+                <div class="absolute inset-2 border-3 border-black rounded-full bg-yellow" style="animation: spin 1.5s linear infinite reverse, pulse 1.5s ease-in-out infinite 0.3s;"></div>
+                <div class="absolute inset-4 border-3 border-black rounded-full bg-red" style="animation: spin 1s linear infinite, pulse 1s ease-in-out infinite 0.6s;"></div>
+                <!-- Center icon with gentle pulse -->
+                <div class="absolute inset-6 border-2 border-black rounded-full bg-white flex items-center justify-center" style="animation: gentle-pulse 2s ease-in-out infinite;">
+                    <span class="text-3xl">🎨</span>
                 </div>
+                <!-- Floating particles -->
+                <div class="absolute top-0 left-1/2 w-2 h-2 bg-blue rounded-full border border-black" style="animation: float-up 2s ease-in-out infinite;"></div>
+                <div class="absolute top-2 right-0 w-2 h-2 bg-yellow rounded-full border border-black" style="animation: float-up 2s ease-in-out infinite 0.5s;"></div>
+                <div class="absolute bottom-0 left-0 w-2 h-2 bg-red rounded-full border border-black" style="animation: float-up 2s ease-in-out infinite 1s;"></div>
             </div>
-            <h2 class="text-2xl font-black mb-2" style="color: var(--text-primary);">취향 분석 중...</h2>
-            <p class="font-bold text-sm" style="color: var(--text-secondary);">당신과 찰떡인 아티스트를 찾고 있어요!</p>
+            <h2 id="loading-text" class="text-2xl font-black mb-2 transition-opacity duration-500" style="color: var(--text-primary);">오늘의 아트 세션 준비 중…</h2>
+            <p class="font-bold text-sm" style="color: var(--text-secondary);">잠시만 기다려주세요</p>
             <style>
-                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                @keyframes spin { 
+                    0% { transform: rotate(0deg); } 
+                    100% { transform: rotate(360deg); } 
+                }
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); opacity: 1; }
+                    50% { transform: scale(1.1); opacity: 0.8; }
+                }
+                @keyframes gentle-pulse {
+                    0%, 100% { transform: scale(1); opacity: 1; }
+                    50% { transform: scale(1.05); opacity: 0.95; }
+                }
+                @keyframes float-up {
+                    0% { transform: translateY(0) scale(0.8); opacity: 0; }
+                    50% { transform: translateY(-20px) scale(1); opacity: 1; }
+                    100% { transform: translateY(-40px) scale(0.8); opacity: 0; }
+                }
             </style>
         </div>`;
+        
+        // 로딩 문구 순환 (각 메시지 최소 1초씩 보이도록)
+        const loadingMessages = [
+            '오늘의 아트 세션 준비 중…',
+            '함께할 아트 메이트 찾는 중…',
+            '완벽한 매칭을 준비하고 있어요…'
+        ];
+        let messageIndex = 0;
+        const loadingTextEl = document.getElementById('loading-text');
+        
+        // 기존 타이머 정리
+        if (window.loadingInterval) {
+            clearInterval(window.loadingInterval);
+            window.loadingInterval = null;
+        }
+        if (window.loadingTimeout) {
+            clearTimeout(window.loadingTimeout);
+            window.loadingTimeout = null;
+        }
+        
+        if (loadingTextEl) {
+            // 첫 메시지는 즉시 표시
+            loadingTextEl.textContent = loadingMessages[0];
+            
+            // 각 메시지가 최소 1초씩 보이도록 (페이드 시간 0.3초 포함하여 1.3초 간격)
+            window.loadingInterval = setInterval(() => {
+                if (state.currentStep !== 'LOADING') {
+                    if (window.loadingInterval) {
+                        clearInterval(window.loadingInterval);
+                        window.loadingInterval = null;
+                    }
+                    return;
+                }
+                
+                messageIndex++;
+                if (messageIndex >= loadingMessages.length) {
+                    // 모든 메시지가 전환되었으면 더 이상 변경하지 않음
+                    if (window.loadingInterval) {
+                        clearInterval(window.loadingInterval);
+                        window.loadingInterval = null;
+                    }
+                    // 마지막 메시지가 표시된 후 1초 뒤에 결과 화면으로 전환
+                    window.loadingTimeout = setTimeout(() => {
+                        if (state.currentStep === 'LOADING') {
+                            changeStep('RESULT');
+                        }
+                        window.loadingTimeout = null;
+                    }, 1000);
+                    return;
+                }
+                
+                loadingTextEl.style.opacity = '0';
+                setTimeout(() => {
+                    if (loadingTextEl && state.currentStep === 'LOADING') {
+                        loadingTextEl.textContent = loadingMessages[messageIndex];
+                        loadingTextEl.style.opacity = '1';
+                    }
+                }, 300); // 페이드 아웃 시간
+            }, 1300); // 각 메시지가 1초 보이고 0.3초 페이드 = 1.3초 간격
+        }
     } else if (state.currentStep === 'RESULT') {
         app.innerHTML = ResultScreen(p);
     } else if (state.currentStep === 'PLAYING') {
@@ -931,30 +981,12 @@ function render() {
         </div>`;
     } else if (state.currentStep === 'HUB') {
         app.innerHTML = HubScreen(p);
-    } else if (state.currentStep === 'VIDEO_GALLERY') {
-        app.innerHTML = VideoGalleryScreen(p);
     } else if (state.currentStep === 'GAME_RESULT') {
         app.innerHTML = GameResultScreen();
     } else if (state.currentStep === 'MASTERPIECE') {
         app.innerHTML = MasterpieceScreen(p);
     } else if (state.currentStep === 'CLIP_INTRO') {
         app.innerHTML = MasterpieceClipScreen(p);
-    } else if (state.currentStep === 'EMOTION_DIARY') {
-        app.innerHTML = EmotionDiaryScreen(p);
-        // 텍스트 입력 이벤트 리스너 설정
-        setTimeout(() => {
-            const textEl = document.getElementById('diary-text');
-            if (textEl) {
-                textEl.addEventListener('input', (e) => {
-                    const count = e.target.value.length;
-                    const countEl = document.getElementById('char-count');
-                    if (countEl) countEl.textContent = count;
-                    if (window.checkDiaryValid) window.checkDiaryValid();
-                });
-            }
-        }, 100);
-    } else if (state.currentStep === 'DIARY_LIST') {
-        app.innerHTML = DiaryListScreen();
     }
 
     if (window.lucide) window.lucide.createIcons();
@@ -1124,6 +1156,13 @@ window.toggleBGM = toggleBGM;
 window.toggleSFX = toggleSFX;
 window.toggleVibration = toggleVibration;
 
+// 명화 클립 같이 보기 토글
+window.toggleMasterpieceClip = function(checked) {
+    state.showMasterpieceClip = checked;
+    localStorage.setItem('showMasterpieceClip', checked ? 'true' : 'false');
+    console.log('명화 클립 같이 보기:', checked);
+};
+
 // 🎨 작품 감상 모달 (앱 내 - 쇼츠 스타일, 전체 화면)
 window.openArtworkViewer = function (imageUrl) {
     const modal = document.getElementById('artworkModal');
@@ -1291,11 +1330,12 @@ window.addEventListener('error', (event) => {
         step: state.currentStep
     });
 
-    // 사용자에게 친절한 에러 메시지
-    if (!document.getElementById('error-toast')) {
+    // 사용자에게 친절한 에러 메시지 (앱 프레임 안에 표시)
+    const app = document.getElementById('app');
+    if (app && !document.getElementById('error-toast')) {
         const toast = document.createElement('div');
         toast.id = 'error-toast';
-        toast.className = 'fixed bottom-6 left-6 right-6 bg-red p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.className = 'absolute bottom-6 left-6 right-6 bg-red p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
         toast.innerHTML = `
             <div class="flex items-start gap-3">
                 <div class="text-3xl">😅</div>
@@ -1303,15 +1343,17 @@ window.addEventListener('error', (event) => {
                     <div class="font-black mb-1" style="color: var(--text-primary);">일시적인 문제가 발생했어요</div>
                     <div class="text-sm font-bold" style="color: var(--text-primary);">잠시 후 다시 시도해주세요</div>
                 </div>
-                <button onclick="this.parentElement.parentElement.remove()" 
+                <button onclick="this.closest('#error-toast').remove()" 
                         class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center">
                     <i data-lucide="x" width="16" style="color: var(--text-primary);"></i>
                 </button>
             </div>
         `;
-        document.body.appendChild(toast);
+        app.appendChild(toast);
         if (window.lucide) window.lucide.createIcons();
-        setTimeout(() => toast.remove(), 5000);
+        setTimeout(() => {
+            if (toast.parentElement) toast.remove();
+        }, 5000);
     }
 });
 
@@ -1326,23 +1368,30 @@ window.addEventListener('unhandledrejection', (event) => {
 
 // 📡 온라인/오프라인 상태 감지
 window.addEventListener('online', () => {
-    const toast = document.createElement('div');
-    toast.className = 'fixed bottom-6 left-6 right-6 bg-green p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
-    toast.innerHTML = `
+    const app = document.getElementById('app');
+    if (app) {
+        const toast = document.createElement('div');
+        toast.className = 'absolute bottom-6 left-6 right-6 bg-green p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.innerHTML = `
             <div class="flex items-center gap-3">
                 <div class="text-2xl">✅</div>
                 <div class="flex-1 font-black" style="color: var(--text-primary);">인터넷에 다시 연결되었어요</div>
             </div>
         `;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-    analytics.log('connection_restored');
+        app.appendChild(toast);
+        setTimeout(() => {
+            if (toast.parentElement) toast.remove();
+        }, 3000);
+        analytics.log('connection_restored');
+    }
 });
 
 window.addEventListener('offline', () => {
-    const toast = document.createElement('div');
-    toast.className = 'fixed bottom-6 left-6 right-6 bg-orange p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
-    toast.innerHTML = `
+    const app = document.getElementById('app');
+    if (app) {
+        const toast = document.createElement('div');
+        toast.className = 'absolute bottom-6 left-6 right-6 bg-orange p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.innerHTML = `
             <div class="flex items-center gap-3">
                 <div class="text-2xl">📡</div>
                 <div class="flex-1">
@@ -1351,31 +1400,39 @@ window.addEventListener('offline', () => {
                 </div>
             </div>
         `;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 5000);
-    analytics.log('connection_lost');
+        app.appendChild(toast);
+        setTimeout(() => {
+            if (toast.parentElement) toast.remove();
+        }, 5000);
+        analytics.log('connection_lost');
+    }
 });
 
 // 🎨 에너지 충전 완료 토스트
 window.showRechargeSuccess = () => {
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-24 left-6 right-6 bg-yellow p-6 rounded-3xl border-3 border-black shadow-notion-lg animate-bounce-in z-[100] text-center';
-    toast.innerHTML = `
-        <div class="text-4xl mb-2">⚡</div>
-        <div class="font-black text-xl mb-1" style="color: var(--text-primary);">에너지 충전 완료!</div>
-        <div class="text-sm font-bold" style="color: var(--text-primary);">오늘의 아티스트와 함께 마음이 더 단단해졌어요.</div>
-    `;
-    document.body.appendChild(toast);
+    const app = document.getElementById('app');
+    if (app) {
+        const toast = document.createElement('div');
+        toast.className = 'absolute top-24 left-6 right-6 bg-yellow p-6 rounded-3xl border-3 border-black shadow-notion-lg animate-bounce-in z-[100] text-center';
+        toast.innerHTML = `
+            <div class="text-4xl mb-2">⚡</div>
+            <div class="font-black text-xl mb-1" style="color: var(--text-primary);">에너지 충전 완료!</div>
+            <div class="text-sm font-bold" style="color: var(--text-primary);">오늘의 아티스트와 함께 마음이 더 단단해졌어요.</div>
+        `;
+        app.appendChild(toast);
 
-    // 햅틱 피드백
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        // 햅틱 피드백
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
-    setTimeout(() => {
-        toast.style.transition = 'all 0.5s ease';
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(-20px)';
-        setTimeout(() => toast.remove(), 500);
-    }, 4000);
+        setTimeout(() => {
+            toast.style.transition = 'all 0.5s ease';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                if (toast.parentElement) toast.remove();
+            }, 500);
+        }, 4000);
+    }
 };
 
 // Page Visibility API for session tracking
@@ -1481,25 +1538,30 @@ window.onload = () => {
     // 첫 방문 환영 메시지
     if (!localStorage.getItem('visited')) {
         setTimeout(() => {
-            const welcome = document.createElement('div');
-            welcome.className = 'fixed bottom-6 left-6 right-6 bg-blue p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
-            welcome.innerHTML = `
-                <div class="flex items-start gap-3">
-                    <div class="text-3xl">👋</div>
-                    <div class="flex-1">
-                        <div class="font-black mb-1" style="color: var(--text-primary);">환영합니다!</div>
-                        <div class="text-sm font-bold" style="color: var(--text-primary);">오늘 나와 함께할 아트 메이트를 찾아보세요</div>
+            const app = document.getElementById('app');
+            if (app) {
+                const welcome = document.createElement('div');
+                welcome.className = 'absolute bottom-6 left-6 right-6 bg-blue p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+                welcome.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <div class="text-3xl">👋</div>
+                        <div class="flex-1">
+                            <div class="font-black mb-1" style="color: var(--text-primary);">환영합니다!</div>
+                            <div class="text-sm font-bold" style="color: var(--text-primary);">오늘 나와 함께할 아트 메이트를 찾아보세요</div>
+                        </div>
+                        <button onclick="this.closest('div').remove()" 
+                                class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center">
+                            <i data-lucide="x" width="16" style="color: var(--text-primary);"></i>
+                        </button>
                     </div>
-                    <button onclick="this.parentElement.parentElement.remove()" 
-                            class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center">
-                        <i data-lucide="x" width="16" style="color: var(--text-primary);"></i>
-                    </button>
-                </div>
-            `;
-            document.body.appendChild(welcome);
-            if (window.lucide) window.lucide.createIcons();
-            setTimeout(() => welcome.remove(), 5000);
-            localStorage.setItem('visited', 'true');
+                `;
+                app.appendChild(welcome);
+                if (window.lucide) window.lucide.createIcons();
+                setTimeout(() => {
+                    if (welcome.parentElement) welcome.remove();
+                }, 5000);
+                localStorage.setItem('visited', 'true');
+            }
         }, 1000);
     }
 };

@@ -1,8 +1,9 @@
 // 튜닝 화면 (아트 메이트 찾기)
+import { state } from '../../core/state.js';
+
 export function TuningScreen(step) {
     // Vibrant colors for each choice
     const choiceColors = ['bg-red', 'bg-blue', 'bg-yellow', 'bg-green', 'bg-purple', 'bg-orange'];
-    const borderColors = ['border-red', 'border-blue', 'border-yellow', 'border-green', 'border-purple', 'border-orange'];
 
     // 각 질문마다 다른 재미있는 멘트
     const questions = [
@@ -70,11 +71,21 @@ export function TuningScreen(step) {
     const question = questions[step - 1];
     const color1 = choiceColors[(step - 1) % 6];
     const color2 = choiceColors[((step - 1) + 3) % 6];
+    const prevSelected = state.tuningSelectionByStep && state.tuningSelectionByStep[step];
+    const leftSelected = prevSelected === choice.d1;
+    const rightSelected = prevSelected === choice.d2;
 
     return `<div class="h-full flex flex-col p-6 font-sans bg-white">
         <div class="pt-6 mb-6">
-            <div class="flex justify-between text-sm font-black mb-3" style="color: var(--text-primary);">
-                <span>✨ ${step}번째 질문</span>
+            <div class="flex justify-between items-center text-sm font-black mb-3" style="color: var(--text-primary);">
+                <div class="flex items-center gap-2">
+                    ${step > 1 ? `
+                    <button onclick="actions.tuningBack()" class="w-12 h-12 rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors min-w-[48px] min-h-[48px]">
+                        <i data-lucide="arrow-left" width="24" style="color: var(--text-primary);"></i>
+                    </button>
+                    ` : ''}
+                    <span>✨ ${step}번째 질문</span>
+                </div>
                 <span>${step} / 7</span>
             </div>
             <div class="w-full h-3 bg-gray-100 rounded-full border-2 border-black overflow-hidden">
@@ -89,8 +100,9 @@ export function TuningScreen(step) {
         
         <div class="flex-1 flex flex-col gap-4 pb-8" style="min-height: 0;">
             <div onclick="spawnDOMParticles(event); actions.tuningSelect('${choice.d1}', '${choice.t1}', '${choice.artist1}')" 
-                 class="flex-1 notion-card cursor-pointer relative overflow-hidden" style="min-height: 0;">
+                 class="flex-1 notion-card cursor-pointer relative overflow-hidden ${leftSelected ? 'ring-4 ring-blue-500 ring-offset-2' : ''}" style="min-height: 0;">
                 <div class="h-full w-full relative">
+                    ${leftSelected ? '<div class="absolute top-3 left-3 z-10 px-3 py-1.5 bg-white/95 rounded-lg border-2 border-black text-sm font-black" style="color: var(--text-primary);">✓ 내가 고른 것</div>' : ''}
                     <img src="${choice.img1}" 
                          class="w-full h-full object-cover" 
                          style="object-fit: cover; object-position: center;"
@@ -106,8 +118,9 @@ export function TuningScreen(step) {
             </div>
             
             <div onclick="spawnDOMParticles(event); actions.tuningSelect('${choice.d2}', '${choice.t2}', '${choice.artist2}')" 
-                 class="flex-1 notion-card cursor-pointer relative overflow-hidden" style="min-height: 0;">
+                 class="flex-1 notion-card cursor-pointer relative overflow-hidden ${rightSelected ? 'ring-4 ring-blue-500 ring-offset-2' : ''}" style="min-height: 0;">
                 <div class="h-full w-full relative">
+                    ${rightSelected ? '<div class="absolute top-3 left-3 z-10 px-3 py-1.5 bg-white/95 rounded-lg border-2 border-black text-sm font-black" style="color: var(--text-primary);">✓ 내가 고른 것</div>' : ''}
                     <img src="${choice.img2}" 
                          class="w-full h-full object-cover" 
                          style="object-fit: cover; object-position: center;"

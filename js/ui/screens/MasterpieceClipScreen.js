@@ -6,8 +6,8 @@ export function MasterpieceClipScreen(p) {
         <!-- Close Button (Returns to Result) -->
         <div class="absolute top-6 left-6 z-20">
             <button onclick="actions.goBackToResult()"
-                    class="w-10 h-10 rounded-full bg-black/50 backdrop-blur flex items-center justify-center border border-white/30 hover:bg-black/70 transition-colors">
-                <i data-lucide="arrow-left" width="24"></i>
+                    class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-black/50 backdrop-blur flex items-center justify-center border border-white/30 hover:bg-black/70 transition-colors">
+                <i data-lucide="arrow-left" width="24" class="flex-shrink-0"></i>
             </button>
         </div>
 
@@ -53,8 +53,8 @@ export function MasterpieceClipScreen(p) {
                 <!-- 하단 액션 버튼 (아래로 배치) -->
                 <div class="pt-2 pb-4">
                     <button onclick="actions.startGame()" 
-                            class="w-full py-4 px-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white font-semibold text-lg hover:bg-white/20 transition-all shadow-lg">
-                        아트 여정 시작하기 →
+                            class="w-full py-4 px-6 min-h-[52px] bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white font-semibold text-lg hover:bg-white/20 transition-all shadow-lg">
+                        아트 게임 이어하기
                     </button>
                 </div>
             </div>

@@ -6,7 +6,7 @@ export function MasterpieceScreen(p) {
         <!-- Close Button -->
         <div class="absolute top-6 right-6 z-20">
             <button onclick="actions.goBackToResult()" 
-                    class="w-10 h-10 rounded-full bg-black/50 backdrop-blur text-white flex items-center justify-center border border-white/30">
+                    class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-black/50 backdrop-blur text-white flex items-center justify-center border border-white/30">
                 <i data-lucide="x" width="24"></i>
             </button>
         </div>
