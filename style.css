@@ -41,48 +41,35 @@
   box-sizing: border-box;
 }
 
-/* iOS Safari 뷰포트 높이 완전 고정 */
-html {
-  height: 100%;
-  height: -webkit-fill-available;
-  overflow: hidden;
-}
-
+/* iOS Safari 전체화면 레이아웃 */
+html,
 body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  height: 100%;
+  height: 100svh;
+  overflow: hidden;
+  background: #FFFFFF;
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 16px;
-  background-color: #FFFFFF;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  height: -webkit-fill-available;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
-/* 앱 루트: iPhone·Android 공통 */
+/* 앱 루트: 전체 화면 채우기 */
 #app,
 .app-root {
-  width: 100%;
-  height: 100%;
-  /* Clean white background */
-  background: #FFFFFF;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: #FFFFFF;
   overflow: hidden;
   border: none;
   box-shadow: none;
-  /* Flexbox로 자식 요소 배치 */
+  /* Flexbox 레이아웃 */
   display: flex;
   flex-direction: column;
   /* Safe area 패딩 */
@@ -92,11 +79,13 @@ body {
   padding-right: env(safe-area-inset-right);
 }
 
-/* 화면 컴포넌트가 전체 높이를 채우도록 */
+/* 화면 컴포넌트: flex로 남은 공간 채우기 */
 #app>div {
-  flex: 1;
-  width: 100%;
-  min-height: 0;
+  flex: 1 1 0% !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
   overflow: hidden;
 }
 

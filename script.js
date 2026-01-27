@@ -1568,23 +1568,6 @@ document.addEventListener('keydown', (e) => {
 // 앱 시작 시 로컬 이미지(화가·명화) 미리 로드 — DOM 준비되는 즉시 시작
 document.addEventListener('DOMContentLoaded', () => {
     preloadAllAppAssets();
-
-    // iOS Safari 뷰포트 높이 수정 (100vh 문제 해결)
-    function setViewportHeight() {
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-        // #app 요소 높이도 직접 설정
-        const app = document.getElementById('app');
-        if (app) {
-            app.style.height = `${window.innerHeight}px`;
-        }
-    }
-
-    setViewportHeight();
-    window.addEventListener('resize', setViewportHeight);
-    window.addEventListener('orientationchange', () => {
-        setTimeout(setViewportHeight, 100);
-    });
 });
 
 // 접근성: Focus 표시
