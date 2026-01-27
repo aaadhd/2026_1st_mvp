@@ -12,7 +12,7 @@ export function ResultScreen(p) {
                 <span class="text-2xl">${p.artistEmoji}</span>
                 <span>오늘의 아트 메이트</span>
             </span>
-            <button onclick="window.openMenuModal()" 
+            <button onclick="window.openSettingsModal()" 
                     class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
                 <i data-lucide="menu" width="24" style="color: var(--text-primary);"></i>
             </button>

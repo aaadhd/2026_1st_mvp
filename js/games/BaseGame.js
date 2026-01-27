@@ -1,6 +1,6 @@
 export class BaseGame {
     // 🎮 Safe Play Area (Avoids HUD overlap)
-    static SAFE_TOP = 180;      // Top HUD + guide text height
+    static SAFE_TOP = 100;      // Top HUD + guide text height
     static SAFE_BOTTOM = 100;   // Bottom progress bar height
 
     constructor(config) {
@@ -91,7 +91,7 @@ export class BaseGame {
     startBGM() {
         this.resumeAudio();
         if (!this.audioCtx || this.bgmInterval) return;
-        
+
         // 사용자 설정 확인
         if (window.state && window.state.settings && !window.state.settings.bgmEnabled) {
             return;
@@ -136,7 +136,7 @@ export class BaseGame {
         const playNote = () => {
             // Stop previous oscillators
             this.bgmOscillators.forEach(osc => {
-                try { osc.stop(); } catch(e) {}
+                try { osc.stop(); } catch (e) { }
             });
             this.bgmOscillators = [];
 
@@ -147,11 +147,11 @@ export class BaseGame {
             const osc = this.audioCtx.createOscillator();
             osc.frequency.value = note;
             osc.type = 'sine';
-            
+
             const noteGain = this.audioCtx.createGain();
             noteGain.gain.setValueAtTime(0.3, now);
             noteGain.gain.exponentialRampToValueAtTime(0.01, now + melody.tempo / 1000 * 0.8);
-            
+
             osc.connect(noteGain);
             noteGain.connect(this.bgmGain);
             osc.start(now);
@@ -163,11 +163,11 @@ export class BaseGame {
             const harmonyOsc = this.audioCtx.createOscillator();
             harmonyOsc.frequency.value = note * 1.5; // Perfect fifth
             harmonyOsc.type = 'sine';
-            
+
             const harmonyGain = this.audioCtx.createGain();
             harmonyGain.gain.setValueAtTime(0.15, now);
             harmonyGain.gain.exponentialRampToValueAtTime(0.01, now + melody.tempo / 1000 * 0.8);
-            
+
             harmonyOsc.connect(harmonyGain);
             harmonyGain.connect(this.bgmGain);
             harmonyOsc.start(now);
@@ -190,7 +190,7 @@ export class BaseGame {
         }
 
         this.bgmOscillators.forEach(osc => {
-            try { osc.stop(); } catch(e) {}
+            try { osc.stop(); } catch (e) { }
         });
         this.bgmOscillators = [];
 
@@ -204,7 +204,7 @@ export class BaseGame {
     playSound(type = 'success') {
         this.resumeAudio();
         if (!this.audioCtx) return;
-        
+
         // 사용자 설정 확인
         if (window.state && window.state.settings && !window.state.settings.sfxEnabled) {
             return;
@@ -341,7 +341,7 @@ export class BaseGame {
             ctx.fill();
         }
         ctx.globalAlpha = 1.0;
-        
+
         ctx.restore();
     }
 
@@ -396,7 +396,7 @@ export class BaseGame {
 
         this.playSound('combo');
         this.screenShake(30, 0.5); // 🎉 Level Up Shake
-        
+
         if (this.onLevelUp) {
             this.onLevelUp(this.level);
         }
@@ -417,7 +417,7 @@ export class BaseGame {
         this.stopBGM(); // 🎵 Stop BGM on game over
         this.playSound('fail');
         this.screenShake(15, 0.4); // 💔 Game Over Shake
-        
+
         // 🆕 Positive Fail: 80% 이상 달성 시 재도전 기회 제공
         const progress = this.collected / this.targetScore;
         if (progress >= 0.8 && this.onPositiveFail) {

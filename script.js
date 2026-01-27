@@ -195,19 +195,24 @@ const actions = {
             artist_id: state.persona.id,
             mechanic: state.persona.mechanic
         });
-        // 아트 게임 모아보기(Hub)에서 진입 시 명화 보기 건너뛰고 바로 게임 → 끝나면 결과 화면
-        if (state.currentStep === 'HUB') {
+
+        // 출처 저장 및 바로 시작 여부 결정
+        const fromStep = state.currentStep;
+
+        if (fromStep === 'HUB' || fromStep === 'GAME_RESULT') {
+            state.navigationSource = fromStep;
+            state.lastPlayedGameId = state.persona.id;
             actions.startGame();
-            return;
-        }
-        // 결과 화면 등에서는 체크박스(showMasterpieceClip)에 따라 분기
-        if (state.showMasterpieceClip) {
-            changeStep('CLIP_INTRO');
         } else {
-            actions.startGame();
+            state.navigationSource = fromStep;
+            // 일반 플로우 (명화 클립 거쳐서 게임 시작)
+            if (state.showMasterpieceClip) {
+                changeStep('CLIP_INTRO');
+            } else {
+                actions.startGame();
+            }
         }
-    },
-    // proceedToActivity는 제거됨 - startGame()으로 직접 이동
+    },// proceedToActivity는 제거됨 - startGame()으로 직접 이동
     viewMasterpiece: () => {
         changeStep('MASTERPIECE');
     },
@@ -576,15 +581,15 @@ const actions = {
                             </div>
                             <h2 class="text-2xl font-black mb-3" style="color: var(--text-primary);">아깝다! 조금만 더!</h2>
                             <p class="mb-2 font-bold" style="color: var(--text-secondary);">목표의 ${progressPercent}%나 달성했어요</p>
-                            <p class="text-lg font-black mb-6 bg-yellow px-4 py-2 rounded-xl border-2 border-black inline-block" style="color: var(--text-primary);">
+                            <p class="text-xl font-black mb-6" style="color: var(--text-primary);">
                                 10초만 더 플레이할까요?
                             </p>
                             <div class="flex gap-3">
-                                <button id="continue-btn" class="flex-1 py-3 bg-blue font-black rounded-xl border-2 border-black shadow-notion" style="color: var(--text-primary);">
+                                <button id="continue-btn" class="flex-1 py-3 bg-blue font-black rounded-xl border-2 border-black shadow-notion" style="color: #ffffff;">
                                     계속 고고! ⏱️
                                 </button>
                                 <button id="quit-btn" class="flex-1 py-3 bg-white font-black rounded-xl border-2 border-black shadow-notion" style="color: var(--text-primary);">
-                                    나가기
+                                    끝내기
                                 </button>
                             </div>
                         </div>
@@ -656,7 +661,12 @@ const actions = {
     },
     playNext: (id) => {
         const found = Object.values(ARTISTS_DB).flat().find(a => a.id === id);
-        if (found) { state.persona = found; actions.startLevelIntro(); }
+        if (found) {
+            state.navigationSource = state.currentStep;
+            state.lastPlayedGameId = id;
+            state.persona = found;
+            actions.startLevelIntro();
+        }
     },
     goHome: () => { state.totalScore = 0; changeStep('HUB'); },
     togglePause: () => {
@@ -758,7 +768,15 @@ const actions = {
             }
             state.engine.stop();
         }
-        changeStep('RESULT');
+
+        // 출처에 따라 복귀 화면 결정 (HUB, GAME_RESULT 등)
+        if (state.navigationSource === 'HUB') {
+            changeStep('HUB');
+        } else if (state.navigationSource === 'GAME_RESULT') {
+            changeStep('GAME_RESULT');
+        } else {
+            changeStep('RESULT');
+        }
     },
 
     // 🛠️ 개발자용: 플로우 스킵
@@ -1000,43 +1018,44 @@ function render() {
         // Canvas Game Screen
         app.innerHTML = `
         <div class="h-full flex flex-col bg-white relative overflow-hidden select-none">
-            <!-- Header Interface - Minimal style -->
+            <!-- Header Interface - Consolidated Single Row style -->
             <div class="absolute top-0 left-0 right-0 z-20 pointer-events-none">
-                <!-- 첫 번째 줄: 버튼 + 점수/시간 -->
-                <div class="p-3 flex justify-between items-start">
+                <!-- 1. Progress Bar at the very top -->
+                <div class="w-full bg-gray-100 h-2.5 pointer-events-none border-b border-black/10">
+                    <div id="ui-progress" class="h-full transition-all duration-300 bg-purple" style="width:0%;"></div>
+                </div>
+                
+                <!-- 2. Single row for all controls and stats -->
+                <div class="p-3 flex justify-between items-center">
+                    <!-- Left: Buttons -->
                     <div class="flex gap-2 pointer-events-auto">
                         <button onclick="actions.quitGame()" 
-                                class="bg-white rounded-xl w-11 h-11 flex items-center justify-center border-2 border-black shadow-notion">
+                                class="bg-white rounded-xl w-11 h-11 flex items-center justify-center border-2 border-black shadow-notion active:scale-95 transition-transform">
                              <i data-lucide="x" width="20" style="color: var(--text-primary);"></i>
                         </button>
                         <button onclick="actions.togglePause()" id="pause-btn" 
-                                class="bg-yellow rounded-xl w-11 h-11 flex items-center justify-center border-2 border-black shadow-notion">
+                                class="bg-yellow rounded-xl w-11 h-11 flex items-center justify-center border-2 border-black shadow-notion active:scale-95 transition-transform">
                              <i data-lucide="pause" width="20" style="color: var(--text-primary);"></i>
                         </button>
                     </div>
-                    <div class="flex flex-col items-end gap-1 pointer-events-auto">
-                        <div class="text-right">
-                            <div class="text-[10px] font-bold uppercase tracking-wider opacity-60" style="color: var(--text-secondary);">Score</div>
-                            <div id="ui-score" class="text-2xl font-black leading-none" style="color: var(--text-primary);">0</div>
+                    
+                    <!-- Center: Level -->
+                    <div class="flex flex-col items-center flex-1">
+                        <div id="ui-level" class="text-base font-black uppercase tracking-widest leading-none" style="color: var(--text-primary);">LEVEL ${state.currentLevel}</div>
+                        <div id="ui-collected" class="hidden">0 / 0</div>
+                    </div>
+                    
+                    <!-- Right: Time & Score (Grouped) -->
+                    <div class="flex flex-col items-end min-w-[70px]">
+                        <div class="flex items-center gap-1.5 leading-none mb-1">
+                            <span class="text-[10px] font-black opacity-40">TIME</span>
+                            <span id="ui-time" class="text-2xl font-mono font-black italic tracking-tighter" style="color: var(--text-primary);">0</span>
                         </div>
-                        <div class="text-right">
-                            <div class="text-[10px] font-bold uppercase tracking-wider opacity-60" style="color: var(--text-secondary);">Time</div>
-                            <div id="ui-time" class="text-2xl font-mono font-black leading-none" style="color: var(--text-primary);">0</div>
+                        <div class="flex items-center gap-1.5 leading-none">
+                            <span class="text-[10px] font-black opacity-40">SCORE</span>
+                            <span id="ui-score" class="text-sm font-black" style="color: var(--text-secondary);">0</span>
                         </div>
                     </div>
-                </div>
-                
-                <!-- 두 번째 줄: 레벨/목표 + 진행바 -->
-                <div class="px-4 pb-3 pointer-events-none">
-                     <div class="flex justify-between items-center text-sm font-black mb-2">
-                        <span id="ui-level" class="pointer-events-auto" 
-                              style="color: var(--text-primary);">LEVEL ${state.currentLevel}</span>
-                        <span id="ui-collected" class="pointer-events-auto" 
-                              style="color: var(--text-secondary);">0 / 0</span>
-                     </div>
-                     <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
-                        <div id="ui-progress" class="h-full transition-all duration-300 bg-purple rounded-full" style="width:0%;"></div>
-                     </div>
                 </div>
             </div>
             
@@ -1045,6 +1064,19 @@ function render() {
         </div>`;
     } else if (state.currentStep === 'HUB') {
         app.innerHTML = HubScreen(p);
+
+        // 마지막 플레이 게임 포커스 (약간의 지연 필요)
+        if (state.lastPlayedGameId) {
+            setTimeout(() => {
+                const element = document.getElementById(`hub-game-${state.lastPlayedGameId}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // 시각적 피드백 (하이라이트 효과)
+                    element.classList.add('highlight-focus');
+                    setTimeout(() => element.classList.remove('highlight-focus'), 1000);
+                }
+            }, 100);
+        }
     } else if (state.currentStep === 'GAME_RESULT') {
         app.innerHTML = GameResultScreen();
     } else if (state.currentStep === 'MASTERPIECE') {
@@ -1219,6 +1251,20 @@ window.shareResultCard = shareResultCard;
 window.toggleBGM = toggleBGM;
 window.toggleSFX = toggleSFX;
 window.toggleVibration = toggleVibration;
+
+// 설정 모달에서 네비게이션
+window.goToNewArtMate = function () {
+    window.closeSettingsModal();
+    state.tuningStep = 0;
+    state.currentStep = 'TUNING';
+    render();
+};
+
+window.goToArtGameHub = function () {
+    window.closeSettingsModal();
+    state.currentStep = 'HUB';
+    render();
+};
 
 // 명화 클립 같이 보기 토글
 window.toggleMasterpieceClip = function (checked) {
@@ -1399,16 +1445,19 @@ window.addEventListener('error', (event) => {
     if (app && !document.getElementById('error-toast')) {
         const toast = document.createElement('div');
         toast.id = 'error-toast';
-        toast.className = 'absolute bottom-6 left-6 right-6 bg-red p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        // Use left/right with max-width and internal padding/wrapping
+        toast.className = 'absolute bottom-8 left-6 right-6 bg-red p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.style.wordBreak = 'break-all';
+        toast.style.overflowWrap = 'break-word';
         toast.innerHTML = `
             <div class="flex items-start gap-3">
                 <div class="text-3xl">😅</div>
-                <div class="flex-1">
-                    <div class="font-black mb-1" style="color: var(--text-primary);">일시적인 문제가 발생했어요</div>
-                    <div class="text-sm font-bold" style="color: var(--text-primary);">잠시 후 다시 시도해주세요</div>
+                <div class="flex-1 min-w-0">
+                    <div class="font-black mb-1 truncate" style="color: var(--text-primary);">일시적인 문제가 발생했어요</div>
+                    <div class="text-sm font-bold opacity-90" style="color: var(--text-primary);">잠시 후 다시 시도해주세요</div>
                 </div>
                 <button onclick="this.closest('#error-toast').remove()" 
-                        class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center">
+                        class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center shrink-0">
                     <i data-lucide="x" width="16" style="color: var(--text-primary);"></i>
                 </button>
             </div>
@@ -1435,11 +1484,13 @@ window.addEventListener('online', () => {
     const app = document.getElementById('app');
     if (app) {
         const toast = document.createElement('div');
-        toast.className = 'absolute bottom-6 left-6 right-6 bg-green p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.className = 'absolute bottom-8 left-6 right-6 bg-green p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.style.wordBreak = 'break-all';
+        toast.style.overflowWrap = 'break-word';
         toast.innerHTML = `
             <div class="flex items-center gap-3">
-                <div class="text-2xl">✅</div>
-                <div class="flex-1 font-black" style="color: var(--text-primary);">인터넷에 다시 연결되었어요</div>
+                <div class="text-2xl shrink-0">✅</div>
+                <div class="flex-1 font-black min-w-0" style="color: var(--text-primary);">인터넷에 다시 연결되었어요</div>
             </div>
         `;
         app.appendChild(toast);
@@ -1454,13 +1505,15 @@ window.addEventListener('offline', () => {
     const app = document.getElementById('app');
     if (app) {
         const toast = document.createElement('div');
-        toast.className = 'absolute bottom-6 left-6 right-6 bg-orange p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.className = 'absolute bottom-8 left-6 right-6 bg-orange p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.style.wordBreak = 'break-all';
+        toast.style.overflowWrap = 'break-word';
         toast.innerHTML = `
             <div class="flex items-center gap-3">
-                <div class="text-2xl">📡</div>
-                <div class="flex-1">
-                    <div class="font-black mb-1" style="color: var(--text-primary);">인터넷 연결이 끊어졌어요</div>
-                    <div class="text-sm font-bold" style="color: var(--text-primary);">게임은 계속 플레이할 수 있습니다</div>
+                <div class="text-2xl shrink-0">📡</div>
+                <div class="flex-1 min-w-0">
+                    <div class="font-black mb-1 truncate" style="color: var(--text-primary);">인터넷 연결이 끊어졌어요</div>
+                    <div class="text-sm font-bold opacity-90" style="color: var(--text-primary);">게임은 계속 플레이할 수 있습니다</div>
                 </div>
             </div>
         `;
@@ -1478,10 +1531,12 @@ window.showRechargeSuccess = () => {
     if (app) {
         const toast = document.createElement('div');
         toast.className = 'absolute top-24 left-6 right-6 bg-yellow p-6 rounded-3xl border-3 border-black shadow-notion-lg animate-bounce-in z-[100] text-center';
+        toast.style.wordBreak = 'break-all';
+        toast.style.overflowWrap = 'break-word';
         toast.innerHTML = `
             <div class="text-4xl mb-2">⚡</div>
             <div class="font-black text-xl mb-1" style="color: var(--text-primary);">에너지 충전 완료!</div>
-            <div class="text-sm font-bold" style="color: var(--text-primary);">오늘의 아티스트와 함께 마음이 더 단단해졌어요.</div>
+            <div class="text-sm font-bold opacity-90" style="color: var(--text-primary);">오늘의 아티스트와 함께 마음이 더 단단해졌어요.</div>
         `;
         app.appendChild(toast);
 

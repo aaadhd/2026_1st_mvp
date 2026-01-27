@@ -60,38 +60,28 @@ export function GameResultScreen() {
                 ` : ''}
                 
                 <!-- 다시 도전하기 버튼 -->
-                <div class="mb-4 max-w-sm mx-auto">
+                <div class="mb-8 max-w-sm mx-auto">
                     <button onclick="actions.startGame()"
-                            class="w-full py-4 min-h-[52px] font-black rounded-xl border-2 border-black shadow-notion bg-black text-base"
+                            class="w-full py-4 min-h-[52px] font-black rounded-xl border-2 border-black shadow-notion bg-black text-base transition-transform active:scale-[0.98]"
                             style="color: #ffffff;">
-                        다시 도전하기 🔄
+                        한 번 더 하기 🔄
                     </button>
                 </div>
                 
-                <!-- 아트 게임 모아보기 버튼 -->
-                <div class="mb-6 max-w-sm mx-auto">
-                    <button onclick="actions.goBackToHub()"
-                            class="w-full py-4 min-h-[48px] bg-white border-2 border-black rounded-xl text-base font-bold shadow-notion flex items-center justify-center gap-2"
-                            style="color: var(--text-primary);">
-                        <i data-lucide="grid-3x3" width="16"></i> 아트 게임 모아보기
-                    </button>
-                </div>
+                <hr class="border-t border-gray-100 mb-8 max-w-xs mx-auto">
                 
-                <!-- 🎮 아트 게임 모아보기 섹션 - 가로 스크롤 -->
+                <!-- 🎮 추천 게임 섹션 -->
                 ${domain && ARTISTS_DB[domain] ? `
-                <div class="mb-6">
-                    <h3 class="text-base font-black mb-3 px-6 text-left flex items-center gap-2" style="color: var(--text-primary);">
-                        <span class="px-2 py-0.5 rounded-md ${DOMAIN_COLORS[domain] || 'bg-gray-200'}" style="color: ${domain === 'EMOTION' || domain === 'COGNITION' ? '#ffffff' : 'var(--text-primary)'};">
-                            ${DOMAIN_LABELS[domain]}
-                        </span>
-                        <span>아트 게임 모아보기</span>
-                    </h3>
+                <div class="mb-6 pt-2 pb-6 bg-slate-50/50 rounded-3xl -mx-4 px-4 border border-slate-100/50">
+                    <div class="px-6 mb-4 text-left">
+                        <h3 class="text-xl font-black" style="color: var(--text-primary);">오늘의 추천 게임</h3>
+                    </div>
                     <div class="overflow-x-auto px-6 pb-2 -mx-2 px-2" style="scrollbar-width: none; -ms-overflow-style: none;">
                         <style>
                             .overflow-x-auto::-webkit-scrollbar { display: none; }
                         </style>
                         <div class="flex gap-3" style="width: max-content;">
-                            ${ARTISTS_DB[domain].filter(g => g.id !== p.id).map(g => `
+                            ${ARTISTS_DB[domain].map(g => `
                                 <div onclick="actions.playNext('${g.id}')" class="flex-shrink-0 w-32 bg-white rounded-xl border-2 border-black shadow-notion cursor-pointer flex flex-col overflow-hidden hover:bg-gray-50 transition-colors active:scale-95">
                                     <div class="relative w-full aspect-[3/4] bg-gray-100 overflow-hidden flex-shrink-0">
                                         <img src="${g.artistImg || '/images/default-artist.jpg'}" 

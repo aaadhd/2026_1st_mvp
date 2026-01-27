@@ -78,13 +78,13 @@ export class TouchGame extends BaseGame {
             const pulse = 1 + Math.sin(Date.now() * 0.01) * 0.1;
             ctx.translate(this.width / 2, 150);
             ctx.scale(pulse, pulse);
-            
+
             // 그림자
             ctx.fillStyle = 'rgba(236, 72, 153, 0.3)';
             ctx.font = 'bold 32px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText(`${this.combo} COMBO! 🔥`, 2, 2);
-            
+
             // 텍스트
             ctx.fillStyle = '#ec4899';
             ctx.fillText(`${this.combo} COMBO! 🔥`, 0, 0);
@@ -107,10 +107,10 @@ export class TouchGame extends BaseGame {
             ctx.globalAlpha = opacity;
             ctx.translate(item.x, item.y);
             ctx.scale(scale, scale);
-            
+
             // 😊 행복한 얼굴 그리기
             GameGraphics.drawFace(ctx, 0, 0, 30, 'happy');
-            
+
             ctx.restore();
 
             if (item.life < 1.0) {
@@ -118,27 +118,12 @@ export class TouchGame extends BaseGame {
             }
         }
 
-        // 🎯 목표 표시
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#fff';
-        ctx.strokeStyle = '#1e3a8a';
-        ctx.lineWidth = 3;
-        ctx.font = 'bold 20px sans-serif';
-        const goalText = `목표: 웃는 얼굴 ${this.targetScore}개`;
-        ctx.strokeText(goalText, this.width / 2, this.safeTop + 15);
-        ctx.fillText(goalText, this.width / 2, this.safeTop + 15);
-        
-        ctx.font = 'bold 16px sans-serif';
-        ctx.fillStyle = this.collected >= this.targetScore ? '#4caf50' : '#fbbf24';
-        ctx.strokeText(`${this.collected} / ${this.targetScore}`, this.width / 2, this.safeTop + 38);
-        ctx.fillText(`${this.collected} / ${this.targetScore}`, this.width / 2, this.safeTop + 38);
-        
         // Instruction (처음에만)
         if (this.items.length === 0 && this.collected === 0) {
             ctx.fillStyle = '#9ca3af';
             ctx.font = 'bold 16px sans-serif';
             ctx.fillText("행복한 얼굴만 터치하세요!", this.width / 2, this.safeTop + 70);
-            
+
             const bounce = Math.sin(Date.now() * 0.005) * 10;
             ctx.font = '30px sans-serif';
             ctx.fillText('😊', this.width / 2, this.safeTop + 110 + bounce);

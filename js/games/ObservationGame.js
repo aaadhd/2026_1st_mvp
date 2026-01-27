@@ -95,22 +95,22 @@ export class ObservationGame extends BaseGame {
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(angle * Math.PI / 180);
-        
+
         // GameGraphics의 연꽃 그리기 사용
         // variant를 petals로 사용해서 다양성 만들기
         GameGraphics.drawLotus(ctx, 0, 0, size / 2, color, petals);
-        
+
         ctx.restore();
     }
 
     draw(ctx) {
         // 🎨 모네의 정원 배경
         GameGraphics.drawGradientBackground(ctx, this.width, this.height, ['#e3f2fd', '#bbdefb', '#90caf9']);
-        
+
         // 물 효과 (연못)
         ctx.fillStyle = 'rgba(129, 212, 250, 0.3)';
         ctx.fillRect(0, this.safeTop + 220, this.width, this.height - this.safeTop - 220);
-        
+
         // 물결 효과
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
         ctx.lineWidth = 2;
@@ -125,30 +125,14 @@ export class ObservationGame extends BaseGame {
             );
             ctx.stroke();
         }
-        
+
         // 타이틀 영역
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         ctx.fillRect(0, this.safeTop, this.width, 200);
 
-        // 🎯 목표 표시
-        ctx.fillStyle = '#fff';
-        ctx.strokeStyle = '#1565c0';
-        ctx.lineWidth = 3;
-        ctx.font = 'bold 24px sans-serif';
-        ctx.textAlign = 'center';
-        const goalText = `목표: 같은 수련 ${this.targetScore}개 찾기`;
-        ctx.strokeText(goalText, this.width / 2, this.safeTop + 20);
-        ctx.fillText(goalText, this.width / 2, this.safeTop + 20);
-
-        ctx.font = 'bold 20px sans-serif';
-        ctx.fillStyle = this.collected >= this.targetScore ? '#4caf50' : '#ff9800';
-        const progressText = `${this.collected} / ${this.targetScore}`;
-        ctx.strokeText(progressText, this.width / 2, this.safeTop + 48);
-        ctx.fillText(progressText, this.width / 2, this.safeTop + 48);
-
         ctx.fillStyle = '#1565c0';
         ctx.font = 'bold 14px sans-serif';
-        ctx.fillText("(색깔, 꽃잎 수, 방향을 관찰하세요)", this.width / 2, this.safeTop + 70);
+        ctx.fillText("(색깔, 꽃잎 수, 방향을 관찰하세요)", this.width / 2, this.safeTop + 20);
 
         ctx.font = '14px sans-serif';
         ctx.fillText("⬇ 이 꽃과 똑같은 꽃을 찾으세요 ⬇", this.width / 2, this.safeTop + 90);
@@ -167,10 +151,10 @@ export class ObservationGame extends BaseGame {
             ctx.beginPath();
             ctx.arc(this.width / 2, this.safeTop + 140, 55, 0, Math.PI * 2);
             ctx.fill();
-            
+
             // Draw Target
             this.drawFlower(ctx, this.width / 2, this.safeTop + 140, 80, this.targetFeature.color, this.targetFeature.petals, this.targetFeature.angle);
-            
+
             // 장식 테두리
             ctx.strokeStyle = '#0288d1';
             ctx.lineWidth = 3;
@@ -188,7 +172,7 @@ export class ObservationGame extends BaseGame {
                 ctx.arc(opt.x, opt.y, opt.size + 5, 0, Math.PI * 2);
                 ctx.fill();
             }
-            
+
             if (opt.checked) {
                 ctx.globalAlpha = 0.4;
             }

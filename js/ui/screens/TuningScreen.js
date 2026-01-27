@@ -77,16 +77,15 @@ export function TuningScreen(step) {
 
     return `<div class="h-full flex flex-col p-3 font-sans bg-white">
         <div class="mb-6">
-            <div class="flex justify-between items-center text-sm font-black mb-3" style="color: var(--text-primary);">
-                <div class="flex items-center gap-2">
+            <div class="flex justify-between items-center text-sm font-black mb-3 min-h-[48px]" style="color: var(--text-primary);">
+                <div class="w-12 h-12 flex items-center">
                     ${step > 1 ? `
-                    <button onclick="actions.tuningBack()" class="w-12 h-12 rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors min-w-[48px] min-h-[48px]">
+                    <button onclick="actions.tuningBack()" class="w-12 h-12 rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
                         <i data-lucide="arrow-left" width="24" style="color: var(--text-primary);"></i>
                     </button>
                     ` : ''}
-                    <span>✨ ${step}번째 질문</span>
                 </div>
-                <span>${step} / 7</span>
+                <span class="leading-none">${step} / 7</span>
             </div>
             <div class="w-full h-3 bg-gray-100 rounded-full border-2 border-black overflow-hidden">
                 <div class="h-full ${color1} transition-all" style="width: ${(step / 7) * 100}%; border-right: 2px solid black;"></div>

@@ -55,7 +55,7 @@ export class PaintGame extends BaseGame {
                 });
             }
         }
-        
+
         this.onNewRound = () => this.setupLevel();
     }
 
@@ -99,7 +99,7 @@ export class PaintGame extends BaseGame {
             if (fairy.x < 30 || fairy.x > this.width - 30) fairy.vx *= -1;
             if (fairy.y < this.safeTop + 100 || fairy.y > this.safeBottom - 100) fairy.vy *= -1;
         }
-        
+
         // 붓 자취 업데이트
         for (let i = this.brushTrail.length - 1; i >= 0; i--) {
             this.brushTrail[i].life -= dt;
@@ -113,22 +113,6 @@ export class PaintGame extends BaseGame {
         // Background
         ctx.fillStyle = '#1c1917';
         ctx.fillRect(0, 0, this.width, this.height);
-
-        // 🎯 목표 표시
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#fbbf24';
-        ctx.strokeStyle = '#92400e';
-        ctx.lineWidth = 3;
-        ctx.font = 'bold 20px sans-serif';
-        const goalText = `목표: 꽃 ${Math.ceil(this.items.length * 0.9)}개 물들이기`;
-        ctx.strokeText(goalText, this.width / 2, this.safeTop + 20);
-        ctx.fillText(goalText, this.width / 2, this.safeTop + 20);
-        
-        ctx.font = 'bold 16px sans-serif';
-        const goalProgress = this.paintedCount / (this.items.length * 0.9);
-        ctx.fillStyle = goalProgress >= 1.0 ? '#4caf50' : '#ff9800';
-        ctx.strokeText(`${this.paintedCount} / ${Math.ceil(this.items.length * 0.9)}`, this.width / 2, this.safeTop + 45);
-        ctx.fillText(`${this.paintedCount} / ${Math.ceil(this.items.length * 0.9)}`, this.width / 2, this.safeTop + 45);
 
         // Combo
         if (this.combo >= 3) {
@@ -177,20 +161,20 @@ export class PaintGame extends BaseGame {
         for (const fairy of this.fairies) {
             ctx.save();
             ctx.translate(fairy.x, fairy.y);
-            
+
             // 요정 몸
             ctx.fillStyle = '#dda0dd';
             ctx.beginPath();
             ctx.arc(0, 0, fairy.size * 0.3, 0, Math.PI * 2);
             ctx.fill();
-            
+
             // 경고 표시
             ctx.fillStyle = '#ef4444';
             ctx.font = 'bold 20px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('⚠️', 0, -fairy.size * 0.7);
-            
+
             ctx.restore();
         }
 

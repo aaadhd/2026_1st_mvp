@@ -8,7 +8,7 @@ export function IntroScreen() {
                 <div class="icon-circle bg-red rotate-slight-reverse" style="animation: bounce 2s infinite 0.4s;">🖌️</div>
             </div>
             
-            <h1 class="text-6xl font-black mb-3 tracking-tight font-serif" style="color: var(--text-primary);">신나는 그림약방</h1>
+            <h1 class="text-[clamp(2.5rem,11vw,3.75rem)] font-black mb-3 tracking-tight font-serif" style="color: var(--text-primary);">신나는 그림약방</h1>
             <p class="text-2xl font-black mb-2" style="color: var(--text-secondary);">Art & Soul Pharmacy</p>
             <p class="text-lg mb-10 px-4" style="color: var(--text-secondary);">하루를 즐겁게 채우는 내 마음 맞춤 아트</p>
             
@@ -16,7 +16,7 @@ export function IntroScreen() {
                 <i data-lucide="sparkles" width="24"></i> 오늘의 아트 세션 시작
             </button>
             
-            <div class="absolute bottom-8 text-sm font-bold" style="color: var(--text-secondary);">v3.1.1 Notion Edition</div>
+
             
             <style>
                 @keyframes bounce {

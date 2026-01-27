@@ -20,19 +20,55 @@
 }
 
 /* Color variants */
-.bg-red { background-color: var(--accent-red) !important; }
-.bg-blue { background-color: var(--accent-blue) !important; }
-.bg-yellow { background-color: var(--accent-yellow) !important; }
-.bg-green { background-color: var(--accent-green) !important; }
-.bg-purple { background-color: var(--accent-purple) !important; }
-.bg-orange { background-color: var(--accent-orange) !important; }
+.bg-red {
+  background-color: var(--accent-red) !important;
+  color: white !important;
+}
 
-.border-red { border-color: var(--accent-red) !important; }
-.border-blue { border-color: var(--accent-blue) !important; }
-.border-yellow { border-color: var(--accent-yellow) !important; }
-.border-green { border-color: var(--accent-green) !important; }
-.border-purple { border-color: var(--accent-purple) !important; }
-.border-orange { border-color: var(--accent-orange) !important; }
+.bg-blue {
+  background-color: var(--accent-blue) !important;
+  color: white !important;
+}
+
+.bg-yellow {
+  background-color: var(--accent-yellow) !important;
+}
+
+.bg-green {
+  background-color: var(--accent-green) !important;
+}
+
+.bg-purple {
+  background-color: var(--accent-purple) !important;
+}
+
+.bg-orange {
+  background-color: var(--accent-orange) !important;
+}
+
+.border-red {
+  border-color: var(--accent-red) !important;
+}
+
+.border-blue {
+  border-color: var(--accent-blue) !important;
+}
+
+.border-yellow {
+  border-color: var(--accent-yellow) !important;
+}
+
+.border-green {
+  border-color: var(--accent-green) !important;
+}
+
+.border-purple {
+  border-color: var(--accent-purple) !important;
+}
+
+.border-orange {
+  border-color: var(--accent-orange) !important;
+}
 
 /* Thick borders */
 .border-thick {
@@ -98,7 +134,7 @@
   min-height: 0 !important;
 }
 
-.notion-card.flex-1 > div {
+.notion-card.flex-1>div {
   height: 100% !important;
 }
 
@@ -110,7 +146,7 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
-  
+
   /* 이미지 카드 터치 피드백 */
   .notion-card:active {
     transform: translate(1.5px, 1.5px) scale(0.98);

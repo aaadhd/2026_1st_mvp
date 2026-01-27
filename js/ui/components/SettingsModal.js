@@ -67,6 +67,16 @@ export function openSettingsModal() {
                         <span class="setting-label">Vibration</span>
                     </div>
                 </div>
+                
+                <!-- Navigation Buttons -->
+                <div class="settings-nav-buttons">
+                    <button onclick="window.goToNewArtMate()" class="settings-nav-btn">
+                        <span>새로운 아트 메이트 찾기</span>
+                    </button>
+                    <button onclick="window.goToArtGameHub()" class="settings-nav-btn">
+                        <span>아트 게임 모아보기</span>
+                    </button>
+                </div>
             </div>
         </div>
     `;

@@ -12,13 +12,13 @@ export function HubScreen(p) {
         // 모든 게임을 도메인별로 그룹화
         filteredGames = Object.entries(ARTISTS_DB).map(([domain, games]) => ({
             domain,
-            games: games.filter(g => g.id !== p.id)
+            games: games
         }));
     } else {
         // 선택된 탭의 게임만
         filteredGames = [{
             domain: currentTab,
-            games: ARTISTS_DB[currentTab].filter(g => g.id !== p.id)
+            games: ARTISTS_DB[currentTab]
         }];
     }
 
@@ -58,7 +58,7 @@ export function HubScreen(p) {
                     <div class="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2">
                         <button onclick="actions.setHubTab('ALL')" 
                                 class="flex-shrink-0 px-5 py-3 rounded-xl border-2 border-black shadow-notion font-black text-sm min-h-[48px] flex items-center ${currentTab === 'ALL' ? 'bg-blue' : 'bg-white'}"
-                                style="color: var(--text-primary);">
+                                style="color: ${currentTab === 'ALL' ? '#ffffff' : 'var(--text-primary)'};">
                             전체
                         </button>
                         ${Object.keys(DOMAIN_LABELS).map(domain => {
@@ -66,7 +66,7 @@ export function HubScreen(p) {
         const color = isActive ? DOMAIN_COLORS[domain] : 'bg-white';
         return `<button onclick="actions.setHubTab('${domain}')"
                                     class="flex-shrink-0 px-5 py-3 rounded-xl border-2 border-black shadow-notion font-black text-sm min-h-[48px] flex items-center ${color}"
-                                    style="color: var(--text-primary);">
+                                    style="color: ${color === 'bg-red' || color === 'bg-blue' ? '#ffffff' : 'var(--text-primary)'};">
                                 ${DOMAIN_EMOJIS[domain]} ${DOMAIN_LABELS[domain]}
                             </button>`;
     }).join('')}
@@ -90,10 +90,10 @@ export function HubScreen(p) {
                             ${games.map(g => {
             const isCurrent = g.id === p.id;
             const cardColor = isCurrent ? domainColor : 'bg-white';
-            return `<div onclick="actions.playNext('${g.id}')" class="notion-card p-4 ${cardColor} cursor-pointer flex flex-col items-center text-center">
+            return `<div id="hub-game-${g.id}" onclick="actions.playNext('${g.id}')" class="notion-card p-4 ${cardColor} cursor-pointer flex flex-col items-center text-center">
                                     <div class="text-3xl mb-2">${g.gameEmoji}</div>
-                                    <div class="font-black text-sm leading-tight mb-1" style="color: var(--text-primary);">${g.gameTitle}</div>
-                                    <div class="text-sm font-bold" style="color: var(--text-secondary);">${g.sub} · ${g.title}</div>
+                                    <div class="font-black text-sm leading-tight mb-1" style="color: ${cardColor === 'bg-red' || cardColor === 'bg-blue' ? '#ffffff' : 'var(--text-primary)'};">${g.gameTitle}</div>
+                                    <div class="text-sm font-bold" style="color: ${cardColor === 'bg-red' || cardColor === 'bg-blue' ? 'rgba(255,255,255,0.8)' : 'var(--text-secondary)'};">${g.sub} · ${g.title}</div>
                                 </div>`;
         }).join('')}
                         </div>

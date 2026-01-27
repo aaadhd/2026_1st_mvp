@@ -1,122 +1,97 @@
 // 명화 클립 화면 (리추얼 인트로)
+import { getArtistColor } from '../utils.js';
+
 export function MasterpieceClipScreen(p) {
     if (!p) return '<div>Loading...</div>';
 
-    return `<div class="h-full flex flex-col bg-gradient-to-b from-stone-900 via-stone-800 to-stone-900 relative text-white" id="masterpiece-screen-container">
-        <!-- Close Button (게임 플레이와 동일한 상단 간격) -->
-        <div class="absolute top-0 left-0 z-20 p-3">
+    const artistColor = getArtistColor(p.id);
+
+    return `<div class="h-full flex flex-col bg-white overflow-hidden" id="masterpiece-screen-container">
+        <!-- 상단 헤더 (다른 화면과 동일한 스타일) -->
+        <div class="p-3 bg-white border-b-2 border-black flex justify-between items-center flex-shrink-0 relative z-20">
             <button onclick="actions.goBackToResult()"
-                    class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-black/50 backdrop-blur flex items-center justify-center border border-white/30 hover:bg-black/70 transition-colors">
-                <i data-lucide="arrow-left" width="24" class="flex-shrink-0"></i>
+                    class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
+                <i data-lucide="arrow-left" width="24" style="color: var(--text-primary);"></i>
             </button>
+            <span class="font-black text-lg" style="color: var(--text-primary);">명화로 마음 채우기</span>
+            <div class="w-12"></div>
         </div>
 
-        <!-- 컨텐츠 영역 (flex-1) -->
-        <div class="flex-1 flex flex-col items-center p-6 pt-16 overflow-y-auto">
+        <!-- 컨텐츠 영역 -->
+        <div class="flex-1 flex flex-col items-center px-6 py-6 overflow-y-auto">
             <!-- 작품 제목과 아티스트 -->
-            <div class="text-center mb-4 flex-shrink-0">
-                <div class="text-base font-bold text-stone-400 mb-2 tracking-widest uppercase">${p.title}의 작품</div>
-                <h1 class="text-2xl font-black text-white leading-tight mb-2 font-serif">${p.masterpieceTitle}</h1>
+            <div class="text-center mb-6 flex-shrink-0">
+                <div class="inline-block px-3 py-1 rounded-full text-xs font-black mb-2 animate-fade-in ${artistColor} border border-black/10" style="color: ${artistColor.includes('bg-red') || artistColor.includes('bg-blue') ? '#ffffff' : 'var(--text-primary)'};">
+                    ${p.title}의 작품
+                </div>
+                <h1 class="text-2xl font-black leading-tight mb-2 font-serif text-slate-900" style="color: var(--text-primary);">${p.masterpieceTitle}</h1>
             </div>
 
-            <!-- 작품 이미지 -->
-            <div class="flex-1 flex items-center justify-center w-full min-h-0 mb-4">
-                <div onclick="window.openArtworkViewer('${p.masterpieceImage}')" class="relative w-full max-w-[280px] aspect-[3/4] bg-black rounded-3xl border-4 border-white/20 shadow-2xl overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:border-white/40">
+            <!-- 작품 이미지 카드 (Notion Style) -->
+            <div class="flex-1 flex items-center justify-center w-full min-h-0 mb-8 motion-safe:animate-fade-in">
+                <div onclick="window.openArtworkViewer('${p.masterpieceImage}')" 
+                     class="relative w-full max-w-[280px] aspect-[4/5] bg-slate-100 rounded-[32px] border-2 border-black shadow-notion-lg overflow-hidden group cursor-pointer transition-all duration-300 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[7px_7px_0_rgba(0,0,0,1)]">
                     <img src="${p.masterpieceImage}" 
-                         class="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity duration-500" 
-                         onerror="this.onerror=null; console.error('이미지 로드 실패:', '${p.masterpieceImage}'); this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center bg-stone-800\\'><div class=\\'text-center text-white/60\\'><div class=\\'text-6xl mb-4\\'>🖼️</div><div class=\\'text-sm\\'>이미지를 불러올 수 없습니다</div></div></div>';"
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                         onerror="this.onerror=null; console.error('이미지 로드 실패:', '${p.masterpieceImage}'); this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center bg-slate-50\\'><div class=\\'text-center text-slate-400\\'><div class=\\'text-6xl mb-4\\'>🖼️</div><div class=\\'text-sm\\'>이미지를 불러올 수 없습니다</div></div></div>';"
                          alt="${p.masterpieceTitle}">
                     
                     <!-- Play Button Overlay -->
-                    <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
-                        <div class="w-16 h-16 rounded-full bg-white/25 backdrop-blur-md border-2 border-white/60 flex items-center justify-center group-hover:bg-white/35 group-hover:scale-110 transition-all shadow-[0_0_20px_rgba(255,255,255,0.4)]">
-                            <i data-lucide="play" width="32" class="fill-white text-white ml-1"></i>
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-black/0 transition-colors">
+                        <div class="w-16 h-16 rounded-full bg-white border-2 border-black flex items-center justify-center shadow-notion group-hover:scale-110 transition-all">
+                            <i data-lucide="play" width="32" class="fill-black text-black ml-1"></i>
                         </div>
-                    </div>
-                    <div class="absolute bottom-4 left-0 right-0 text-center">
-                        <p class="text-white font-semibold text-base drop-shadow-lg bg-black/30 px-4 py-2 rounded-full inline-block backdrop-blur-sm">터치해서 감상하기</p>
                     </div>
                 </div>
             </div>
 
-            <!-- 작품 설명 -->
-            <div class="w-full max-w-sm flex-shrink-0">
-                <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
-                    <p class="text-stone-200 text-lg leading-relaxed font-medium">
-                        ${p.masterpieceDesc}
+            <!-- 작품 설명 (Notion Card Style) -->
+            <div class="w-full max-w-sm flex-shrink-0 animate-slide-up pt-4">
+                <div class="bg-slate-50 border-2 border-black/5 rounded-3xl p-5 relative">
+                    <div class="absolute -top-3 left-6 px-3 bg-white border border-black/10 rounded-full text-xs font-bold text-slate-400">ABOUT</div>
+                    <p class="text-slate-700 text-lg leading-relaxed font-bold italic" style="color: var(--text-secondary);">
+                        "${p.masterpieceDesc}"
                     </p>
                 </div>
             </div>
         </div>
         
-        <!-- 하단 버튼 영역 (고정 위치) -->
-        <div class="flex-shrink-0 px-6 pb-6 pt-2">
+        <!-- 하단 버튼 영역 (ResultScreen과 동일 스타일) -->
+        <div class="flex-shrink-0 px-6 pb-6 pt-2 bg-white">
             <button onclick="actions.startGame()" 
-                    class="w-full py-4 px-6 min-h-[52px] bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white font-semibold text-lg hover:bg-white/20 transition-all shadow-lg">
+                    class="w-full py-5 min-h-[56px] rounded-2xl text-xl font-black border-2 border-black shadow-notion ${artistColor} hover:scale-[1.02] transition-transform"
+                    style="color: ${artistColor.includes('bg-red') || artistColor.includes('bg-blue') ? '#ffffff' : 'var(--text-primary)'};">
                 아트 게임 시작하기
             </button>
         </div>
 
-        <!-- 작품 감상 모달 (앱 프레임 내에서만 전체 화면) -->
-        <div id="artworkModal" class="absolute inset-0 z-[100] bg-gradient-to-b from-stone-900 via-stone-800 to-stone-900 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center overflow-hidden">
-            <!-- 닫기 버튼 (게임 플레이와 동일한 상단 간격) -->
+        <!-- 작품 감상 모달 (여기는 몰입을 위해 다크모드 유지) -->
+        <div id="artworkModal" class="absolute inset-0 z-[100] bg-black hidden opacity-0 transition-opacity duration-300 flex items-center justify-center overflow-hidden">
+            <!-- 닫기 버튼 -->
             <button onclick="window.closeArtworkViewer()" 
-                    class="absolute top-0 right-0 z-20 w-12 h-12 rounded-full bg-black/60 backdrop-blur-md border-2 border-white/30 text-white flex items-center justify-center hover:bg-black/80 transition-all shadow-lg m-3">
+                    class="absolute top-0 right-0 z-20 w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white flex items-center justify-center hover:bg-white/30 transition-all m-4">
                 <i data-lucide="x" width="24"></i>
             </button>
             
-            <!-- 비디오 컨테이너 (앱 프레임 내에서 전체 화면 느낌) -->
             <div class="relative w-full h-full flex items-center justify-center">
-                <!-- 실제 비디오가 있으면 사용, 없으면 이미지를 영상처럼 -->
-                <video id="artworkModalVideo" 
-                       class="w-full h-full object-cover" 
-                       autoplay 
-                       loop 
-                       muted 
-                       playsinline
-                       style="width: 100%; height: 100%; object-fit: cover;">
+                <video id="artworkModalVideo" class="w-full h-full object-cover" autoplay loop muted playsinline>
                     <source id="artworkModalVideoSource" src="" type="video/mp4">
                 </video>
-                
-                <!-- 비디오가 없을 경우 이미지 (자동 스크롤 효과) -->
                 <div id="artworkModalImageContainer" class="absolute inset-0 w-full h-full overflow-hidden hidden">
-                    <img id="artworkModalImage" 
-                         src="" 
-                         class="w-full h-full object-cover animate-pan-image" 
-                         style="width: 100%; height: 100%; object-fit: cover;"
-                         onerror="console.error('모달 이미지 로드 실패:', this.src);"
-                         alt="작품 이미지">
+                    <img id="artworkModalImage" src="" class="w-full h-full object-cover animate-pan-image" alt="작품 이미지">
                 </div>
             </div>
-            
-            <!-- 클릭 오버레이로 닫기 -->
             <div onclick="window.closeArtworkViewer()" class="absolute inset-0 cursor-pointer z-10"></div>
         </div>
         
         <style>
             @keyframes panImage {
-                0% {
-                    transform: scale(1.2) translateY(0) translateX(0);
-                }
-                20% {
-                    transform: scale(1.2) translateY(-8%) translateX(-2%);
-                }
-                40% {
-                    transform: scale(1.2) translateY(-12%) translateX(-4%);
-                }
-                60% {
-                    transform: scale(1.2) translateY(-8%) translateX(-2%);
-                }
-                80% {
-                    transform: scale(1.2) translateY(-4%) translateX(0);
-                }
-                100% {
-                    transform: scale(1.2) translateY(0) translateX(0);
-                }
+                0% { transform: scale(1.1) translateY(0); }
+                50% { transform: scale(1.15) translateY(-5%); }
+                100% { transform: scale(1.1) translateY(0); }
             }
-            .animate-pan-image {
-                animation: panImage 15s ease-in-out infinite;
-            }
+            .animate-pan-image { animation: panImage 15s ease-in-out infinite; }
         </style>
     </div>`;
 }
+

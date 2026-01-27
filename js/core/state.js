@@ -84,6 +84,8 @@ export const state = {
     currentDomain: null, // 현재 플레이 중인 영역 (EMOTION, COGNITION, SOCIAL, SENSORY)
     lastGameResult: null, // 마지막 게임 결과 저장
     currentHubTab: 'ALL', // Hub 화면의 현재 탭 (ALL, EMOTION, COGNITION, SOCIAL, SENSORY)
+    navigationSource: null, // 어디서 게임에 진입했는지 저장 (HUB, RESULT 등)
+    lastPlayedGameId: null, // 마지막으로 플레이한 게임 ID
 
     tuningStep: 1,
     tuningWeights: { EMOTION: 0, COGNITION: 0, SOCIAL: 0, SENSORY: 0 },
@@ -98,10 +100,10 @@ export const state = {
         vibrationEnabled: localStorage.getItem('vibration') !== 'false',
         volume: parseFloat(localStorage.getItem('volume') || '0.7')
     },
-    
+
     // 🛠️ 개발 모드
     devMode: localStorage.getItem('devMode') === 'true',
-    
+
     // 명화 클립 같이 보기 설정
     showMasterpieceClip: (() => {
         const stored = localStorage.getItem('showMasterpieceClip');

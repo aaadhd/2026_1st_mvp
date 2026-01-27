@@ -103,41 +103,19 @@ export class MemoryGame extends BaseGame {
         ctx.textAlign = 'center';
 
         if (this.state === 'MEMORIZE') {
-            // 🎯 목표 표시
-            ctx.fillStyle = '#fff';
-            ctx.strokeStyle = '#6d4c41';
-            ctx.lineWidth = 3;
-            ctx.font = 'bold 24px sans-serif';
-            const goalText = `목표: ${this.itemsToRemember.length}개 기억하기`;
-            ctx.strokeText(goalText, this.width / 2, this.safeTop + 20);
-            ctx.fillText(goalText, this.width / 2, this.safeTop + 20);
-
             ctx.font = 'bold 20px sans-serif';
             ctx.fillStyle = this.timer < 2 ? '#ff5252' : '#ff9800';
+            ctx.strokeStyle = '#6d4c41';
+            ctx.lineWidth = 3;
             const timerText = `${Math.ceil(this.timer)}초 남음`;
-            ctx.strokeText(timerText, this.width / 2, this.safeTop + 48);
-            ctx.fillText(timerText, this.width / 2, this.safeTop + 48);
+            ctx.strokeText(timerText, this.width / 2, this.safeTop + 20);
+            ctx.fillText(timerText, this.width / 2, this.safeTop + 20);
 
             // Draw list container (간단한 사각형으로 변경)
             ctx.fillStyle = '#fff';
             ctx.fillRect(40, this.height / 2 - 60, this.width - 80, 120);
 
         } else if (this.state === 'GUESS') {
-            // 🎯 목표 표시
-            ctx.fillStyle = '#fff';
-            ctx.strokeStyle = '#6d4c41';
-            ctx.lineWidth = 3;
-            ctx.font = 'bold 24px sans-serif';
-            const goalText = `목표: 기억한 과일 찾기`;
-            ctx.strokeText(goalText, this.width / 2, this.safeTop + 20);
-            ctx.fillText(goalText, this.width / 2, this.safeTop + 20);
-
-            ctx.font = 'bold 20px sans-serif';
-            ctx.fillStyle = this.foundCount >= this.itemsToRemember.length ? '#4caf50' : '#ff9800';
-            const progressText = `${this.foundCount} / ${this.itemsToRemember.length}`;
-            ctx.strokeText(progressText, this.width / 2, this.safeTop + 48);
-            ctx.fillText(progressText, this.width / 2, this.safeTop + 48);
-
             // Feedback
             if (this.feedbackTimer > 0) {
                 ctx.fillStyle = '#db2777';
@@ -159,7 +137,7 @@ export class MemoryGame extends BaseGame {
             ctx.shadowBlur = 10;
             ctx.fillRect(item.x - 40, item.y - 40, 80, 80);
             ctx.shadowColor = 'transparent';
-            
+
             // 테두리
             ctx.strokeStyle = '#d1d5db';
             ctx.lineWidth = 2;
