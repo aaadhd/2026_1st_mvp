@@ -41,6 +41,38 @@ import {
 import './js/ui/components/MenuModal.js';
 import './js/ui/components/SettingsModal.js';
 
+// --- 앱 시작 시 로컬 이미지 미리 로드 (화면 깨짐·늦은 로딩 완화) ---
+function resolveAssetUrl(path) {
+    if (!path || typeof path !== 'string') return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    try {
+        return new URL(path, window.location.href).href;
+    } catch {
+        return (path.startsWith('/') ? window.location.origin + path : window.location.origin + '/' + path.replace(/^\//, ''));
+    }
+}
+
+function preloadAllAppAssets() {
+    const seen = new Set();
+    const urls = [];
+    for (const list of Object.values(ARTISTS_DB)) {
+        for (const a of list) {
+            if (a.artistImg) {
+                const u = resolveAssetUrl(a.artistImg);
+                if (u && !seen.has(u)) { seen.add(u); urls.push(u); }
+            }
+            if (a.masterpieceImage) {
+                const u = resolveAssetUrl(a.masterpieceImage);
+                if (u && !seen.has(u)) { seen.add(u); urls.push(u); }
+            }
+        }
+    }
+    urls.forEach(url => {
+        const img = new Image();
+        img.src = url;
+    });
+}
+
 // --- 액션 컨트롤러 ---
 // (데이터, 상태, 화면 컴포넌트는 위에서 import됨)
 
@@ -134,12 +166,15 @@ const actions = {
             artist_id: state.persona.id,
             mechanic: state.persona.mechanic
         });
-        // 체크박스 상태에 따라 분기
+        // 아트 게임 모아보기(Hub)에서 진입 시 명화 보기 건너뛰고 바로 게임 → 끝나면 결과 화면
+        if (state.currentStep === 'HUB') {
+            actions.startGame();
+            return;
+        }
+        // 결과 화면 등에서는 체크박스(showMasterpieceClip)에 따라 분기
         if (state.showMasterpieceClip) {
-            // 체크됨: 그림 감상 페이지부터 시작
             changeStep('CLIP_INTRO');
         } else {
-            // 체크 안됨: 바로 게임 시작
             actions.startGame();
         }
     },
@@ -1499,6 +1534,11 @@ document.addEventListener('keydown', (e) => {
     if (e.code === 'KeyS' && state.currentStep === 'PLAYING') {
         toggleSFX();
     }
+});
+
+// 앱 시작 시 로컬 이미지(화가·명화) 미리 로드 — DOM 준비되는 즉시 시작
+document.addEventListener('DOMContentLoaded', () => {
+    preloadAllAppAssets();
 });
 
 // 접근성: Focus 표시

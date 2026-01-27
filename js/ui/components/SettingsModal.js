@@ -67,11 +67,6 @@ export function openSettingsModal() {
                         <span class="setting-label">Vibration</span>
                     </div>
                 </div>
-
-                <!-- Action Buttons -->
-                <button onclick="if(window.actions && window.actions.startTuning) window.actions.startTuning(); window.closeSettingsModal();" class="btn-yellow-3d">
-                    다시 테스트하기
-                </button>
             </div>
         </div>
     `;

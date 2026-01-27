@@ -13,7 +13,7 @@
 | Result/GameResult 하단 버튼 | py-3 | py-4 + min-h-[48px] |
 | Intro 메인 CTA | py-5 | py-5 + min-h-[56px] |
 | Result 메인 CTA (화가와 세션 시작) | py-5 | py-5 + min-h-[56px] |
-| MasterpieceClip "아트 게임 이어하기" | py-4 | py-4 + min-h-[52px] |
+| MasterpieceClip "아트 게임 시작하기" | py-4 | py-4 + min-h-[52px] |
 | GameResult "다시 도전하기" | py-3 | py-4 + min-h-[52px] |
 | 체크박스 (명화 클립) | w-5 h-5 (20px) | w-6 h-6 + min 24px |
 | 설정 모달 닫기 | 50x50 (기존 유지) | — |

@@ -21,9 +21,9 @@ export function GameResultScreen() {
             </button>
         </div>
         
-        <!-- 전체 스크롤 영역 -->
+        <!-- 전체 스크롤 영역 (게임 플레이와 동일한 상단 간격) -->
         <div class="flex-1 overflow-y-auto scroll-safe-bottom">
-            <div class="px-6 text-center" style="padding-top: max(2rem, calc(env(safe-area-inset-top) + 2rem)); padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));">
+            <div class="px-6 text-center pt-6 pb-8">
                 <!-- 게임 이모지 + 타이틀 (이미지 스타일) -->
                 <div class="mb-6">
                     <div class="w-20 h-20 mx-auto mb-4 flex items-center justify-center rounded-full bg-pink-100/80 border border-pink-200/60">

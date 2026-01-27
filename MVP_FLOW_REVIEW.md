@@ -2,40 +2,42 @@
 
 **검토일**: 2026-01-27  
 **대상**: 신나는 그림약방 1차 MVP  
-**기준**: PRD v0.4 검증 가설 및 Success Criteria
+**기준**: PRD v0.4 검증 가설 및 Success Criteria  
+
+👉 **최신 전체 점검(플로우·데드코드·PRD 대조)** 은 **[MVP_REVIEW_LATEST.md](./MVP_REVIEW_LATEST.md)** 참고.
 
 ---
 
-## 1. 현재 앱 플로우 맵
+## 1. 현재 앱 플로우 맵 (갱신)
 
 ```
 INTRO (인트로)
    ↓ [오늘의 아트 세션 시작]
-TUNING (밸런스 게임 7단계) ← 뒤로가기 시 이전 단계 (선택 복원 표시)
+TUNING (밸런스 게임 7단계) ← 뒤로가기 시 이전 단계 (✓ 내가 고른 것 표시)
    ↓ 7번째 선택 후
 LOADING (매칭 중…)
    ↓ 자동 또는 스킵
 RESULT (오늘의 아트 메이트)
-   ├─ [화가와 아트 세션 시작하기] → 체크박스 ON: CLIP_INTRO → MASTERPIECE → PLAYING
-   │                                체크박스 OFF: 바로 PLAYING
-   ├─ [선택 다시하기] → TUNING (처음부터)
+   ├─ [화가와 아트 세션 시작하기] → showMasterpieceClip ? CLIP_INTRO : PLAYING
+   │   (showMasterpieceClip: localStorage 기본 true, UI 토글 없음)
+   ├─ [선택 다시하기] → TUNING
    └─ [아트 게임 모아보기] → HUB
 
-CLIP_INTRO (명화 클립) → [아트 게임 이어하기] → PLAYING
+CLIP_INTRO (명화 클립) → [아트 게임 시작하기] → PLAYING
 MASTERPIECE (작품 감상 전체화면) ← CLIP_INTRO에서 이미지 터치 시
+
+HUB (아트 게임 모아보기)
+   ├─ "명화 클립 같이 보기" 체크박스 없음 (제거됨)
+   ├─ 오늘의 추천 아트 게임 (노란 카드) → 바로 PLAYING
+   ├─ 전체 / 정서 / 인지 / 사회 / 감각 탭
+   └─ 게임 카드 클릭 → playNext(id) → 바로 PLAYING (명화 보기 건너뜀)
 
 PLAYING (게임) → 완료/실패 시
    ↓
 GAME_RESULT (게임 종료!)
    ├─ [다시 도전하기] → PLAYING
-   ├─ [추천 게임] → HUB
-   └─ [정서/인지/사회/감각] 추천 게임 가로 스크롤 → playNext(id) → CLIP_INTRO 경로
-
-HUB (아트 게임 모아보기)
-   ├─ [명화 클립 같이 보기] 체크박스 (ON: 감상 후 게임 / OFF: 게임만)
-   ├─ 오늘의 추천 아트 게임 (노란 카드) → startLevelIntro()
-   ├─ 전체 / 정서 / 인지 / 사회 / 감각 탭
-   └─ 게임 카드 클릭 → playNext(id) → startLevelIntro() → CLIP_INTRO or PLAYING
+   ├─ [아트 게임 모아보기] → HUB
+   └─ {도메인} 추천 게임 가로 스크롤 → playNext(id) → PLAYING
 ```
 
 ---

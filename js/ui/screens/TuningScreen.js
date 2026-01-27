@@ -75,8 +75,8 @@ export function TuningScreen(step) {
     const leftSelected = prevSelected === choice.d1;
     const rightSelected = prevSelected === choice.d2;
 
-    return `<div class="h-full flex flex-col p-6 font-sans bg-white">
-        <div class="pt-6 mb-6">
+    return `<div class="h-full flex flex-col p-3 font-sans bg-white">
+        <div class="mb-6">
             <div class="flex justify-between items-center text-sm font-black mb-3" style="color: var(--text-primary);">
                 <div class="flex items-center gap-2">
                     ${step > 1 ? `

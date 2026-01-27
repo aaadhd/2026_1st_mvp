@@ -2,20 +2,20 @@
 export function MasterpieceClipScreen(p) {
     if (!p) return '<div>Loading...</div>';
 
-    return `<div class="h-full flex flex-col bg-gradient-to-b from-stone-900 via-stone-800 to-stone-900 relative text-white overflow-y-auto" id="masterpiece-screen-container">
-        <!-- Close Button (Returns to Result) -->
-        <div class="absolute top-6 left-6 z-20">
+    return `<div class="h-full flex flex-col bg-gradient-to-b from-stone-900 via-stone-800 to-stone-900 relative text-white overflow-y-auto scroll-safe-bottom" id="masterpiece-screen-container">
+        <!-- Close Button (게임 플레이와 동일한 상단 간격) -->
+        <div class="absolute top-0 left-0 z-20 p-3">
             <button onclick="actions.goBackToResult()"
                     class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-black/50 backdrop-blur flex items-center justify-center border border-white/30 hover:bg-black/70 transition-colors">
                 <i data-lucide="arrow-left" width="24" class="flex-shrink-0"></i>
             </button>
         </div>
 
-        <!-- 컨텐츠 영역 -->
-        <div class="flex-1 flex flex-col items-center p-6 pt-14 pb-6 animate-fade-in overflow-y-auto">
+        <!-- 컨텐츠 영역 (게임 플레이와 동일한 상단 기준) -->
+        <div class="flex-1 flex flex-col items-center p-6 pt-4 pb-6 animate-fade-in overflow-y-auto">
             <div class="w-full max-w-sm mx-auto flex flex-col h-full">
                 <!-- 작품 제목과 아티스트 -->
-                <div class="text-center mb-4">
+                <div class="text-center mb-4 pt-2">
                     <div class="text-base font-bold text-stone-400 mb-2 tracking-widest uppercase">${p.title}의 작품</div>
                     <h1 class="text-2xl font-black text-white leading-tight mb-2 font-serif">${p.masterpieceTitle}</h1>
                 </div>
@@ -54,7 +54,7 @@ export function MasterpieceClipScreen(p) {
                 <div class="pt-2 pb-4">
                     <button onclick="actions.startGame()" 
                             class="w-full py-4 px-6 min-h-[52px] bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white font-semibold text-lg hover:bg-white/20 transition-all shadow-lg">
-                        아트 게임 이어하기
+                        아트 게임 시작하기
                     </button>
                 </div>
             </div>
@@ -62,9 +62,9 @@ export function MasterpieceClipScreen(p) {
 
         <!-- 작품 감상 모달 (앱 프레임 내에서만 전체 화면) -->
         <div id="artworkModal" class="absolute inset-0 z-[100] bg-gradient-to-b from-stone-900 via-stone-800 to-stone-900 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center overflow-hidden">
-            <!-- 닫기 버튼 -->
+            <!-- 닫기 버튼 (게임 플레이와 동일한 상단 간격) -->
             <button onclick="window.closeArtworkViewer()" 
-                    class="absolute top-6 right-6 z-20 w-12 h-12 rounded-full bg-black/60 backdrop-blur-md border-2 border-white/30 text-white flex items-center justify-center hover:bg-black/80 transition-all shadow-lg">
+                    class="absolute top-0 right-0 z-20 w-12 h-12 rounded-full bg-black/60 backdrop-blur-md border-2 border-white/30 text-white flex items-center justify-center hover:bg-black/80 transition-all shadow-lg m-3">
                 <i data-lucide="x" width="24"></i>
             </button>
             

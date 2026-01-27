@@ -23,7 +23,7 @@ export function HubScreen(p) {
     }
 
     return `<div class="h-full flex flex-col bg-white">
-        <div class="px-6 py-4 bg-white border-b-2 border-black flex justify-between items-center sticky top-0 z-10">
+        <div class="p-3 bg-white border-b-2 border-black flex justify-between items-center sticky top-0 z-10">
             <button onclick="actions.goBackToCompanion()" class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion">
                 <i data-lucide="arrow-left" width="24" style="color: var(--text-primary);"></i>
             </button>
@@ -51,23 +51,6 @@ export function HubScreen(p) {
                             <div class="text-5xl ml-4">${p.gameEmoji}</div>
                         </div>
                     </div>
-                </section>
-
-                <!-- 명화 클립 같이 보기 체크박스 -->
-                <section>
-                    <label class="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-black/10 cursor-pointer hover:bg-gray-100 transition-colors" onclick="event.stopPropagation()">
-                        <input type="checkbox" 
-                               id="masterpiece-clip-checkbox"
-                               ${state.showMasterpieceClip !== false ? 'checked' : ''}
-                               onchange="if(window.toggleMasterpieceClip) window.toggleMasterpieceClip(this.checked);"
-                               onclick="event.stopPropagation()"
-                               class="mt-1 w-6 h-6 min-w-[24px] min-h-[24px] rounded border-2 border-black cursor-pointer flex-shrink-0"
-                               style="accent-color: black;">
-                        <div class="flex-1" onclick="event.stopPropagation()">
-                            <div class="font-black text-base mb-1" style="color: var(--text-primary);">명화 클립 같이 보기</div>
-                            <div class="text-sm font-bold" style="color: var(--text-secondary);">선택하면 클립 게임으로 이어져요</div>
-                        </div>
-                    </label>
                 </section>
 
                 <!-- 2. Tab Buttons - Notion Style -->

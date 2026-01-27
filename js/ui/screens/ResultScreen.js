@@ -5,22 +5,21 @@ export function ResultScreen(p) {
     const artistColor = getArtistColor(p.id);
 
     return `<div class="h-full flex flex-col bg-white overflow-y-auto scroll-safe-bottom">
-        <!-- Header with Menu (노치/다이나믹 아일랜드 회피) -->
-        <div class="screen-header-actions">
-            <button onclick="window.openSettingsModal()" 
+        <!-- 상단 한 줄: Hub와 동일한 구조 (중앙 정렬) -->
+        <div class="p-3 bg-white border-b-2 border-black flex justify-between items-center sticky top-0 z-10">
+            <div class="w-12"></div> <!-- 좌측 공간 (Hub의 뒤로가기 버튼과 동일한 너비) -->
+            <span class="font-black text-lg flex items-center gap-2" style="color: var(--text-primary);">
+                <span class="text-2xl">${p.artistEmoji}</span>
+                <span>오늘의 아트 메이트</span>
+            </span>
+            <button onclick="window.openMenuModal()" 
                     class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl border-2 border-black bg-white flex items-center justify-center shadow-notion hover:bg-gray-50 transition-colors">
                 <i data-lucide="menu" width="24" style="color: var(--text-primary);"></i>
             </button>
         </div>
         
-        <div id="result-card" class="min-h-full flex flex-col bg-white">
-            <div class="relative pt-14 pb-6 flex flex-col items-center" style="padding-top: max(3.5rem, calc(env(safe-area-inset-top) + 2rem));">
-                <!-- Badge without box - clean and minimal -->
-                <div class="inline-flex items-center gap-2 mb-4">
-                    <span class="text-2xl">${p.artistEmoji}</span>
-                    <span class="font-black" style="color: var(--text-secondary); font-size: 18px;">오늘의 아트 메이트</span>
-                </div>
-                
+        <div id="result-card" class="min-h-full flex flex-col bg-white pt-6">
+            <div class="relative pb-6 flex flex-col items-center">
                 <!-- Artist Image with playful rotation -->
                 <div class="relative w-40 h-40 mb-4 rotate-slight">
                     <div class="w-full h-full rounded-3xl border-2 border-black ${artistColor} flex items-center justify-center shadow-notion-lg overflow-hidden">
@@ -56,24 +55,6 @@ export function ResultScreen(p) {
                             return artistName + getKoreanParticle(artistName) + ' 아트 세션 시작하기';
                         })()}
                     </button>
-                </div>
-                
-                <div class="h-4"></div> <!-- Spacer after main button -->
-                
-                <!-- 하단 액션 (선택 다시하기 / 둘러보기) - 홈 인디케이터 여백 확보 -->
-                <div class="w-full max-w-xs flex flex-col gap-3" style="padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));">
-                    <div class="flex gap-3">
-                        <button onclick="actions.startTuning()" 
-                                class="flex-1 py-4 min-h-[48px] bg-white border-2 border-black rounded-xl text-base font-bold shadow-notion flex items-center justify-center gap-2"
-                                style="color: var(--text-primary);">
-                            <i data-lucide="refresh-cw" width="16"></i> 선택 다시하기
-                        </button>
-                        <button onclick="actions.goToHub()" 
-                                class="flex-1 py-4 min-h-[48px] bg-white border-2 border-black rounded-xl text-base font-bold shadow-notion flex items-center justify-center"
-                                style="color: var(--text-primary);">
-                            아트 게임 모아보기
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>

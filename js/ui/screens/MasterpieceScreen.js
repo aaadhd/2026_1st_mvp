@@ -3,8 +3,8 @@ export function MasterpieceScreen(p) {
     if (!p) return '<div>Loading...</div>';
 
     return `<div class="h-full flex flex-col bg-stone-900 relative">
-        <!-- Close Button -->
-        <div class="absolute top-6 right-6 z-20">
+        <!-- Close Button (게임 플레이와 동일한 상단 간격) -->
+        <div class="absolute top-0 right-0 z-20 p-3">
             <button onclick="actions.goBackToResult()" 
                     class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-black/50 backdrop-blur text-white flex items-center justify-center border border-white/30">
                 <i data-lucide="x" width="24"></i>

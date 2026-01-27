@@ -47,6 +47,16 @@ export function openMenuModal() {
                         <div class="text-sm font-bold" style="color: var(--text-secondary);">새로운 아트 메이트를 찾아보세요</div>
                     </div>
                 </button>
+                
+                <!-- 아트 게임 모아보기 -->
+                <button onclick="actions.goToHub(); window.closeMenuModal();" 
+                        class="w-full py-4 px-4 bg-white rounded-2xl border-2 border-black shadow-notion flex items-center gap-3 hover:bg-gray-50 transition-colors active:scale-95">
+                    <div class="text-3xl">🎮</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-black text-base" style="color: var(--text-primary);">아트 게임 모아보기</div>
+                        <div class="text-sm font-bold" style="color: var(--text-secondary);">다양한 아트 게임을 탐색해보세요</div>
+                    </div>
+                </button>
             </div>
         </div>
     `;
