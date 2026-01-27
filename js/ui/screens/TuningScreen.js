@@ -19,50 +19,50 @@ export function TuningScreen(step) {
     const tuningChoices = [
         {
             d1: 'SOCIAL', d2: 'EMOTION',
-            img1: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Pierre-Auguste_Renoir_-_Bal_au_moulin_de_la_Galette.jpg/800px-Pierre-Auguste_Renoir_-_Bal_au_moulin_de_la_Galette.jpg",
-            img2: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/800px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+            img1: "/images/screening/SOC_Renoir_Bal.jpg",
+            img2: "/images/screening/EMO_Gogh_Starry.jpg",
             t1: "함께하는 기쁨", t2: "따뜻한 위로",
             artist1: "르누아르", artist2: "고흐"
         },
         {
             d1: 'COGNITION', d2: 'SENSORY',
-            img1: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/The_Scream.jpg/800px-The_Scream.jpg",
-            img2: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/800px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg",
+            img1: "/images/screening/COG_Munch_Scream.jpg",
+            img2: "/images/screening/SEN_Monet_Sunrise.jpg",
             t1: "흥미로운 생각", t2: "화려한 감각",
             artist1: "뭉크", artist2: "모네"
         },
         {
             d1: 'SOCIAL', d2: 'COGNITION',
-            img1: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Grant_Wood_-_American_Gothic.jpg/600px-Grant_Wood_-_American_Gothic.jpg",
-            img2: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Pablo_Picasso%2C_1910%2C_Girl_with_a_Mandolin_%28Fanny_Tellier%29%2C_oil_on_canvas%2C_100.3_x_73.6_cm%2C_Museum_of_Modern_Art_New_York..jpg/600px-Pablo_Picasso%2C_1910%2C_Girl_with_a_Mandolin_%28Fanny_Tellier%29%2C_oil_on_canvas%2C_100.3_x_73.6_cm%2C_Museum_of_Modern_Art_New_York..jpg",
+            img1: "/images/screening/SOC_Wood_Gothic.jpg",
+            img2: "/images/screening/COG_Picasso_Mandolin.jpg",
             t1: "사람들 속으로", t2: "지적인 탐구",
             artist1: "우드", artist2: "피카소"
         },
         {
             d1: 'EMOTION', d2: 'SENSORY',
-            img1: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/VanGogh-Irises_1_edited.jpg/800px-VanGogh-Irises_1_edited.jpg",
-            img2: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Vassily_Kandinsky%2C_1913_-_Composition_7.jpg/800px-Vassily_Kandinsky%2C_1913_-_Composition_7.jpg",
+            img1: "/images/screening/EMO_Gogh_Irises.jpg",
+            img2: "/images/screening/SEN_Kandinsky_Comp7.jpg",
             t1: "감성의 숲", t2: "질서있는 아름다움",
             artist1: "고흐", artist2: "칸딘스키"
         },
         {
             d1: 'EMOTION', d2: 'COGNITION',
-            img1: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1912_Delaunay_Fen%C3%AAtre_sur_la_ville_anagoria.JPG/600px-1912_Delaunay_Fen%C3%AAtre_sur_la_ville_anagoria.JPG",
-            img2: "https://upload.wikimedia.org/wikipedia/en/thumb/8/8f/Paul_Klee%2C_1922%2C_Senecio_%28Baldgreis%29.jpg/600px-Paul_Klee%2C_1922%2C_Senecio_%28Baldgreis%29.jpg",
+            img1: "/images/screening/EMO_Delaunay_Windows.jpg",
+            img2: "/images/screening/COG_Klee_Senecio.jpeg",
             t1: "꿈과 낭만", t2: "논리와 체계",
             artist1: "들로네", artist2: "클레"
         },
         {
             d1: 'SENSORY', d2: 'SOCIAL',
-            img1: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Matisse-Woman-with-a-Hat.jpg/600px-Matisse-Woman-with-a-Hat.jpg",
-            img2: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/La_Danse_%28I%29_by_Matisse.jpg/800px-La_Danse_%28I%29_by_Matisse.jpg",
+            img1: "/images/screening/SEN_Matisse_Hat",
+            img2: "/images/screening/SOC_Matisse_Dance.jpg",
             t1: "소리와 색채", t2: "축제와 어울림",
             artist1: "마티스", artist2: "마티스"
         },
         {
             d1: 'COGNITION', d2: 'EMOTION',
-            img1: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Edvard_Munch_-_Madonna_%281894-1895%29.jpg/600px-Edvard_Munch_-_Madonna_%281894-1895%29.jpg",
-            img2: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg/800px-Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg",
+            img1: "/images/screening/COG_Munch_Madonna.jpg",
+            img2: "/images/screening/EMO_Michelangelo_Adam.jpg",
             t1: "탐구의 즐거움", t2: "순수한 행복",
             artist1: "뭉크", artist2: "미켈란젤로"
         }

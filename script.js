@@ -1446,7 +1446,7 @@ window.addEventListener('error', (event) => {
         const toast = document.createElement('div');
         toast.id = 'error-toast';
         // Use left/right with max-width and internal padding/wrapping
-        toast.className = 'absolute bottom-8 left-6 right-6 bg-red p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.className = 'absolute bottom-12 left-8 right-8 bg-red p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
         toast.style.wordBreak = 'break-all';
         toast.style.overflowWrap = 'break-word';
         toast.innerHTML = `
@@ -1484,7 +1484,7 @@ window.addEventListener('online', () => {
     const app = document.getElementById('app');
     if (app) {
         const toast = document.createElement('div');
-        toast.className = 'absolute bottom-8 left-6 right-6 bg-green p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.className = 'absolute bottom-12 left-8 right-8 bg-green p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
         toast.style.wordBreak = 'break-all';
         toast.style.overflowWrap = 'break-word';
         toast.innerHTML = `
@@ -1505,7 +1505,7 @@ window.addEventListener('offline', () => {
     const app = document.getElementById('app');
     if (app) {
         const toast = document.createElement('div');
-        toast.className = 'absolute bottom-8 left-6 right-6 bg-orange p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        toast.className = 'absolute bottom-12 left-8 right-8 bg-orange p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
         toast.style.wordBreak = 'break-all';
         toast.style.overflowWrap = 'break-word';
         toast.innerHTML = `
@@ -1530,7 +1530,7 @@ window.showRechargeSuccess = () => {
     const app = document.getElementById('app');
     if (app) {
         const toast = document.createElement('div');
-        toast.className = 'absolute top-24 left-6 right-6 bg-yellow p-6 rounded-3xl border-3 border-black shadow-notion-lg animate-bounce-in z-[100] text-center';
+        toast.className = 'absolute top-32 left-8 right-8 bg-yellow p-6 rounded-3xl border-3 border-black shadow-notion-lg animate-bounce-in z-[100] text-center';
         toast.style.wordBreak = 'break-all';
         toast.style.overflowWrap = 'break-word';
         toast.innerHTML = `
