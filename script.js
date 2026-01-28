@@ -1299,10 +1299,9 @@ window.toggleVibration = toggleVibration;
 
 // 설정 모달에서 네비게이션
 window.goToNewArtMate = function () {
-    window.closeSettingsModal();
-    state.tuningStep = 0;
-    state.currentStep = 'TUNING';
-    render();
+    const modal = document.getElementById('settings-modal');
+    if (modal) modal.remove();
+    actions.startTuning();
 };
 
 window.goToArtGameHub = function () {
