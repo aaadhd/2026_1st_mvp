@@ -1,10 +1,36 @@
 // 명화 클립 화면 (리추얼 인트로)
 import { getArtistColor } from '../utils.js';
+import { state } from '../../core/state.js';
 
 export function MasterpieceClipScreen(p) {
     if (!p) return '<div>Loading...</div>';
 
     const artistColor = getArtistColor(p.id);
+    const clipState = state.clipState || 'A';
+
+    // Button & Helper Text Logic based on State
+    let btnClass = 'w-full py-5 min-h-[60px] rounded-2xl text-xl font-black transition-all duration-300';
+    let btnStyle = '';
+    let helperContent = '';
+
+    if (clipState === 'A') {
+        // State A: Secondary (Gray/Outline) - "스킵 가능하지만 권장하지 않음" -> 가시성 끝판왕 (Inline Style로 강제 적용)
+        // 모바일 앱 특성상 hover 제거
+        btnClass += ' bg-white/10 text-white active:scale-[0.98]';
+        btnStyle = 'border: 2px solid #ffffff !important;'; // CSS 충돌 방지용 !important
+    } else {
+        // State B & C: Primary (Artist Color/Red) - "적극 권장"
+        // 모바일 앱 특성상 hover 제거
+        btnClass += ` ${artistColor} border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] active:scale-95`;
+        btnStyle = `color: ${artistColor.includes('bg-red') || artistColor.includes('bg-blue') ? '#ffffff' : 'var(--text-primary)'};`;
+
+        if (clipState === 'B') {
+            // Helper text removed as requested
+            helperContent = '';
+        } else if (clipState === 'C') {
+            helperContent = '<div id="cta-helper-text" class="text-white/80 text-sm mb-2 text-center animate-fade-in"><span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs border border-green-500/30 font-bold">클립 감상 완료 <i data-lucide="check" width="12"></i></span></div>';
+        }
+    }
 
     return `<div class="h-full flex flex-col bg-[#0a0a0a] overflow-hidden animate-fade-in" id="masterpiece-screen-container">
         <!-- 상단 헤더 제거 (몰입감 극대화) -->
@@ -55,10 +81,11 @@ export function MasterpieceClipScreen(p) {
         </div>
         
         <!-- 하단 버튼 영역 -->
-        <div class="flex-shrink-0 px-6 pb-8 pt-4 bg-gradient-to-t from-black to-transparent">
-            <button onclick="actions.startGame()" 
-                    class="w-full py-5 min-h-[60px] rounded-2xl text-xl font-black border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] ${artistColor} hover:scale-[1.02] transition-transform active:scale-95"
-                    style="color: ${artistColor.includes('bg-red') || artistColor.includes('bg-blue') ? '#ffffff' : 'var(--text-primary)'};">
+        <div class="flex-shrink-0 px-6 pb-8 pt-4 bg-gradient-to-t from-black to-transparent" id="cta-container">
+            ${helperContent}
+            <button id="btn-start-game" onclick="actions.startGame()" 
+                    class="${btnClass}"
+                    style="${btnStyle}">
                 아트 게임 시작하기
             </button>
         </div>
@@ -89,6 +116,15 @@ export function MasterpieceClipScreen(p) {
                 100% { transform: scale(1.1) translateY(0); }
             }
             .animate-pan-image { animation: panImage 15s ease-in-out infinite; }
+            
+            @keyframes pulse-once {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.03); }
+                100% { transform: scale(1); }
+            }
+            .animate-pulse-once {
+                animation: pulse-once 200ms ease-out forwards;
+            }
         </style>
     </div>`;
 }

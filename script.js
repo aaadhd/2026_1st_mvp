@@ -34,7 +34,6 @@ import {
     ResultScreen,
     HubScreen,
     GameResultScreen,
-    MasterpieceScreen,
     MasterpieceClipScreen
 } from './js/ui/screens/index.js';
 
@@ -132,6 +131,24 @@ const actions = {
         state.tuningStep--;
         render();
     },
+    // 🎮 아트 게임 시작 (리추얼 -> 게임 or 바로 시작)
+    startGame: () => {
+        // Analytics: CTA Click
+        const entryState = state.clipState === 'A' ? 'before_play' : (state.clipState === 'B' ? 'after_play' : 'after_complete');
+        analytics.log('cta_game_click', {
+            entry_state: entryState,
+            skipped_clip: state.clipSkipped,
+            artist_id: state.persona ? state.persona.id : null
+        });
+
+        // Intro BGM Fade Out
+        if (state.engine && state.engine.audio) {
+            state.engine.audio.stopBGM(0.5);
+        }
+
+        state.currentStep = 'GAME_INTRO';
+        render();
+    },
     tuningSelect: (domain, choice, artist) => {
         state.tuningWeights[domain]++;
         state.tuningSelectionHistory = state.tuningSelectionHistory || [];
@@ -173,7 +190,6 @@ const actions = {
         }
     },
     goToHub: () => {
-        analytics.log('navigate', { from: state.currentStep, to: 'HUB' });
         state.currentHubTab = 'ALL'; // 탭 초기화
         changeStep('HUB');
     },
@@ -182,17 +198,16 @@ const actions = {
         render();
     },
     goBackToCompanion: () => {
-        analytics.log('navigate', { from: 'HUB', to: 'RESULT' });
         changeStep('RESULT');
     },
     goBackToHub: () => {
-        analytics.log('navigate', { from: state.currentStep, to: 'HUB' });
         changeStep('HUB');
     },
     // 게임 허브로 이동 (ResultScreen '아트 여정' 클릭 시)
     goToGameHub: () => {
         actions.goToHub();
     },
+    // proceedToActivityRemoved
     startLevelIntro: () => {
         state.currentLevel = 1;
         state.totalScore = 0;
@@ -219,9 +234,6 @@ const actions = {
                 actions.startGame();
             }
         }
-    },// proceedToActivity는 제거됨 - startGame()으로 직접 이동
-    viewMasterpiece: () => {
-        changeStep('MASTERPIECE');
     },
     goBackToResult: () => {
         changeStep('RESULT');
@@ -1114,8 +1126,6 @@ function render() {
         }
     } else if (state.currentStep === 'GAME_RESULT') {
         app.innerHTML = GameResultScreen();
-    } else if (state.currentStep === 'MASTERPIECE') {
-        app.innerHTML = MasterpieceScreen(p);
     } else if (state.currentStep === 'CLIP_INTRO') {
         app.innerHTML = MasterpieceClipScreen(p);
     }
@@ -1342,6 +1352,7 @@ window.openArtworkViewer = function (imageUrl) {
             // 비디오 로드 성공 시 비디오로 전환
             if (modalImageContainer) modalImageContainer.classList.add('hidden');
             modalVideo.classList.remove('hidden');
+
             modalVideo.play().catch(e => {
                 console.log('비디오 재생 실패, 이미지 유지:', e);
                 // 비디오 재생 실패 시 이미지 유지
@@ -1355,6 +1366,27 @@ window.openArtworkViewer = function (imageUrl) {
             console.log('비디오 없음, 이미지 사용');
         };
     }
+
+    // 📊 Analytics & State Machine (State A -> B check)
+    if (state.persona) {
+        analytics.log('clip_start', { artist_id: state.persona.id });
+        state.clipStartTime = Date.now();
+
+        // 1초 후 State B로 승격
+        if (state.clipState === 'A') {
+            state.clipStateCheckTimer = setTimeout(() => {
+                state.clipState = 'B';
+                state.clipSkipped = false;
+                analytics.log('cta_state_promoted', { trigger: 'play_1s' });
+                // Note: UI Update happens on closeArtworkViewer to catch user attention
+            }, 1000);
+        }
+    }
+
+    // 5초 후 자동 종료 (영상/이미지 무관하게 무조건 실행)
+    state.clipAutoCloseTimer = setTimeout(() => {
+        window.closeArtworkViewer();
+    }, 5000);
 
     // 모달 표시 (앱 프레임 유지하면서 자연스럽게 확대)
     modal.classList.remove('hidden');
@@ -1376,6 +1408,67 @@ window.openArtworkViewer = function (imageUrl) {
 window.closeArtworkViewer = function () {
     const modal = document.getElementById('artworkModal');
     const modalVideo = document.getElementById('artworkModalVideo');
+
+    // Timer cleanup
+    if (state.clipStateCheckTimer) {
+        clearTimeout(state.clipStateCheckTimer);
+        state.clipStateCheckTimer = null;
+    }
+    if (state.clipAutoCloseTimer) {
+        clearTimeout(state.clipAutoCloseTimer);
+        state.clipAutoCloseTimer = null;
+    }
+
+    // 📊 Analytics: Play Time & State C Logic
+    if (state.persona && state.clipStartTime) {
+        const playDuration = Date.now() - state.clipStartTime;
+        // PRD 정의: clip_complete (duration in seconds, is_skipped check)
+        analytics.log('clip_complete', {
+            duration: playDuration / 1000,
+            artist_id: state.persona.id,
+            is_skipped: playDuration < 5000 && state.clipState !== 'C'
+        });
+
+        // State C Promotion (5초 이상 감상 시 완료 처리 - Limiting Playback 대응)
+        if (playDuration >= 5000 && state.clipState !== 'C') {
+            state.clipState = 'C';
+            state.clipSkipped = false;
+            analytics.log('cta_state_promoted', { trigger: 'play_5s_complete' });
+        }
+
+
+        state.clipStartTime = null;
+    }
+
+    // 🎨 UI Update: Apply State B/C Style (Button Promotion)
+    // 모달이 닫히고 "돌아온 순간" 유저가 변화를 인지하도록 처리
+    const btn = document.getElementById('btn-start-game');
+
+    if (btn && state.clipState !== 'A' && state.persona) {
+        // Let's just trigger `render()` for now. It ensures consistency. 
+        // To fix scroll, we can save scrollTop.
+        const container = document.getElementById('masterpiece-screen-container');
+        const scrollArea = container ? container.querySelector('.overflow-y-auto') : null;
+        const scrollTop = scrollArea ? scrollArea.scrollTop : 0;
+
+        // Render triggers full UI update based on new state
+        render();
+
+        // Restore scroll and trigger animation
+        requestAnimationFrame(() => {
+            const newContainer = document.getElementById('masterpiece-screen-container');
+            const newScrollArea = newContainer ? newContainer.querySelector('.overflow-y-auto') : null;
+            if (newScrollArea) newScrollArea.scrollTop = scrollTop;
+
+            // Trigger Animation on new button
+            const newBtn = document.getElementById('btn-start-game');
+            if (newBtn) {
+                newBtn.classList.add('animate-pulse-once');
+            }
+        });
+
+        return; // Render handles modal cleanup implicitly (modal essentially resets to hidden)
+    }
 
     if (!modal) return;
 
@@ -1480,19 +1573,23 @@ window.addEventListener('error', (event) => {
     if (app && !document.getElementById('error-toast')) {
         const toast = document.createElement('div');
         toast.id = 'error-toast';
-        // Use left/right with max-width and internal padding/wrapping
-        toast.className = 'absolute bottom-12 left-8 right-8 bg-red p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
+        // Fix layout: Center within parent with 90% width
+        toast.className = 'absolute bottom-12 left-0 right-0 mx-auto w-[90%] bg-notion-red p-4 rounded-2xl border-2 border-black shadow-notion-lg animate-slide-up z-50';
         toast.style.wordBreak = 'break-all';
         toast.style.overflowWrap = 'break-word';
+
+        const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
         toast.innerHTML = `
             <div class="flex items-start gap-3">
                 <div class="text-3xl">😅</div>
                 <div class="flex-1 min-w-0">
                     <div class="font-black mb-1 truncate" style="color: var(--text-primary);">일시적인 문제가 발생했어요</div>
                     <div class="text-sm font-bold opacity-90" style="color: var(--text-primary);">잠시 후 다시 시도해주세요</div>
+                    ${isDev ? `<div class="mt-2 text-xs bg-black/10 p-2 rounded text-black font-mono break-all leading-tight">${event.error?.message || String(event.error)}</div>` : ''}
                 </div>
                 <button onclick="this.closest('#error-toast').remove()" 
-                        class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center shrink-0">
+                        class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center shrink-0 hover:bg-gray-100 transition-colors">
                     <i data-lucide="x" width="16" style="color: var(--text-primary);"></i>
                 </button>
             </div>

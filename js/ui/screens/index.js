@@ -4,5 +4,4 @@ export { TuningScreen } from './TuningScreen.js';
 export { ResultScreen } from './ResultScreen.js';
 export { HubScreen } from './HubScreen.js';
 export { GameResultScreen } from './GameResultScreen.js';
-export { MasterpieceScreen } from './MasterpieceScreen.js';
 export { MasterpieceClipScreen } from './MasterpieceClipScreen.js';

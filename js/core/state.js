@@ -108,5 +108,11 @@ export const state = {
     showMasterpieceClip: (() => {
         const stored = localStorage.getItem('showMasterpieceClip');
         return stored === null ? true : stored === 'true'; // 기본값은 true
-    })()
+    })(),
+
+    // 🎬 명화 감상 리추얼 상태 (CTA State Machine)
+    clipState: 'A', // 'A' (기본/미재생) | 'B' (재생 경험/1s+) | 'C' (감상 완료)
+    clipPlayTime: 0, // 누적 재생 시간 (ms)
+    clipSkipped: true, // 스킵 여부 (State A에서 진입 시 true)
+    clipStartTime: 0 // 재생 시작 시간 기록용
 };
